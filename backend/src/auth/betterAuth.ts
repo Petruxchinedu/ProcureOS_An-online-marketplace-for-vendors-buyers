@@ -48,4 +48,4 @@ export const auth = betterAuth({
       return token;
     },
   },
-});
+} as any);

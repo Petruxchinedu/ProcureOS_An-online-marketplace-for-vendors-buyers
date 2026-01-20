@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const negotiation_controller_js_1 = require("./negotiation.controller.js");
+const requireAuth_js_1 = require("../../middlewares/requireAuth.js");
+const router = (0, express_1.Router)();
+router.use(requireAuth_js_1.requireAuth);
+router.post("/:rfqId/messages", negotiation_controller_js_1.sendNegotiationMessage);
+router.get("/:rfqId/messages", negotiation_controller_js_1.getNegotiationThread);
+exports.default = router;

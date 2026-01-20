@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RFQModel } from "../rfq/rfq.model.js";
+import  RFQModel  from "../rfq/rfq.model.js";
 import { OrderModel } from "./order.model.js";
 import { EscrowModel } from "../escrow/escrow.model.js";
 import { RFQStatus } from "../rfq/rfq.types.js";

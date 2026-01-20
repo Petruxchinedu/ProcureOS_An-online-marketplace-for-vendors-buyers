@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const order_controller_js_1 = require("./order.controller.js");
+const requireAuth_js_1 = require("../../middlewares/requireAuth.js");
+const requireRole_js_1 = require("../../middlewares/requireRole.js");
+const user_types_js_1 = require("../users/user.types.js");
+const router = (0, express_1.Router)();
+router.post("/rfq/:rfqId", requireAuth_js_1.requireAuth, (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), order_controller_js_1.createOrderFromRFQ);
+router.post("/:orderId/fulfill", requireAuth_js_1.requireAuth, (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.VENDOR), order_controller_js_1.markOrderFulfilled);
+exports.default = router;

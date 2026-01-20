@@ -1,16 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "declaration": false, // Usually not needed for an app, speeds up build
-    "verbatimModuleSyntax": false,
-    "isolatedModules": true
+    "declaration": false,
+    "isolatedModules": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

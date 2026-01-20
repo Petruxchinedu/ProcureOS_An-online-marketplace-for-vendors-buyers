@@ -5,7 +5,7 @@ import { assertRFQParticipant } from "./negotiation.guard.js";
 import { createNotification } from "../notification/notification.service.js";
 import { NotificationType } from "../notification/notification.types.js";
 import { UserModel } from "../users/user.model.js";
-import { RFQModel } from "../rfq/rfq.model.js";
+import  RFQModel  from "../rfq/rfq.model.js";
 /**
  * Send message in negotiation
  */

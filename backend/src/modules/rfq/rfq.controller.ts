@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 // Consolidate imports: Using both the named model and the default if necessary
-import { RFQModel } from "./rfq.model.js";
+import  RFQModel  from "./rfq.model.js";
 import RFQ from "./rfq.model.js"; 
-import { ProductModel } from "../products/product.model.js";
+import ProductModel  from "../products/product.model.js";
 import Product from "../products/product.model.js"; 
 
 import { RFQStatus } from "./rfq.types.js";

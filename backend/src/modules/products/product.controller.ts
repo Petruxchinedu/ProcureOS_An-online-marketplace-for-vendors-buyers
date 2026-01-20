@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ProductModel } from "./product.model.js";
+import  ProductModel  from "./product.model.js";
 import { ProductStatus } from "./product.types.js";
 import Product from "./product.model"; // Ensure your model path is correct
 
@@ -61,8 +61,6 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 // backend/src/modules/products/product.controller.ts
-
-import { Request, Response } from "express";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {

@@ -1,4 +1,4 @@
-import { RFQModel } from "../rfq/rfq.model.js";
+import  RFQModel  from "../rfq/rfq.model.js";
 
 export const assertRFQParticipant = async (
   rfqId: string,
