@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, RequestHandler } from "express";
 import { authenticate, authorize } from "../auth/auth.middleware.js";
 import { UserRole } from "../modules/users/user.types.js";
 
@@ -6,8 +6,9 @@ const router = Router();
 
 router.get(
   "/vendor-only",
-  authenticate,
-  authorize(UserRole.VENDOR),
+  // Cast these to RequestHandler to satisfy Express's internal type check
+  authenticate as RequestHandler,
+  authorize(UserRole.VENDOR) as RequestHandler,
   (_req, res) => {
     res.json({ message: "Vendor access granted" });
   }

@@ -19,7 +19,7 @@ export const confirmDeliveryAndReleaseEscrow = async (
   const order = await OrderModel.findById(orderId);
   if (!order) return res.status(404).json({ message: "Order not found" });
 
-  if (order.buyerOrganizationId.toString() !== req.user.organizationId) {
+  if (order.buyerOrganizationId.toString() !== req.user!.organizationId) {
     return res.status(403).json({ message: "Access denied" });
   }
 

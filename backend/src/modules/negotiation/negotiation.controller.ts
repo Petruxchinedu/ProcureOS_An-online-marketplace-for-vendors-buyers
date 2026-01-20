@@ -5,23 +5,26 @@ import { assertRFQParticipant } from "./negotiation.guard.js";
 import { createNotification } from "../notification/notification.service.js";
 import { NotificationType } from "../notification/notification.types.js";
 import { UserModel } from "../users/user.model.js";
-import  RFQModel  from "../rfq/rfq.model.js";
+import RFQModel from "../rfq/rfq.model.js";
+
 /**
  * Send message in negotiation
  */
 export const sendNegotiationMessage = async (req: Request, res: Response) => {
-  const { rfqId } = req.params;
+  // Cast param to string to avoid "string | string[]" errors
+  const rfqId = req.params.rfqId as string; 
 
-  const rfq = await assertRFQParticipant(rfqId, req.user.organizationId);
+  // Add "!" after req.user to tell TS it is defined by your middleware
+  const rfq = await assertRFQParticipant(rfqId, req.user!.organizationId);
 
   const senderRole =
-    rfq.buyerOrganizationId.toString() === req.user.organizationId
+    rfq.buyerOrganizationId.toString() === req.user!.organizationId
       ? MessageSenderRole.BUYER
       : MessageSenderRole.VENDOR;
 
   const messageRecord = await NegotiationMessageModel.create({
     rfqId,
-    senderId: req.user.userId,
+    senderId: req.user!.userId, // Added "!" here
     senderRole,
     message: req.body.message,
     proposedUnitPrice: req.body.proposedUnitPrice,
@@ -54,9 +57,10 @@ export const sendNegotiationMessage = async (req: Request, res: Response) => {
  * Get negotiation thread for RFQ
  */
 export const getNegotiationThread = async (req: Request, res: Response) => {
-  const { rfqId } = req.params;
+  const rfqId = req.params.rfqId as string; // Cast to string
 
-  await assertRFQParticipant(rfqId, req.user.organizationId);
+  // Added "!" to req.user
+  await assertRFQParticipant(rfqId, req.user!.organizationId);
 
   const messages = await NegotiationMessageModel.find({ rfqId })
     .sort({ createdAt: 1 })

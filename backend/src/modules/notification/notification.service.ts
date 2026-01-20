@@ -1,7 +1,7 @@
 import { NotificationModel } from "./notification.model.js";
 import { NotificationType } from "./notification.types.js";
 import { sendEmail } from "../../utils/mailer.js";
-import { createNotification } from "./notification.service.js"; // Note: removed redundant folder jump if you're already in notification folder
+// REMOVED: import { createNotification } from "./notification.service.js";
 import { UserModel } from "../users/user.model.js";
 
 interface CreateNotificationInput {
@@ -30,11 +30,16 @@ export const createNotification = async ({
   });
 
   if (email) {
-    await sendEmail({
-      to: email,
-      subject: title,
-      html: `<p>${message}</p>`,
-    });
+    try {
+      await sendEmail({
+        to: email,
+        subject: title,
+        html: `<p>${message}</p>`,
+      });
+    } catch (error) {
+      console.error("Email notification failed to send:", error);
+      // We don't throw here so the notification record still exists even if email fails
+    }
   }
 
   return notification;

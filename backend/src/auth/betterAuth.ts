@@ -5,7 +5,7 @@ import { UserModel } from "../modules/users/user.model.js";
 export const auth = betterAuth({
   providers: {
     credentials: {
-      async authorize(credentials) {
+      authorize: async (credentials: any) => {
         const { email, password } = credentials as {
           email: string;
           password: string;
@@ -39,7 +39,7 @@ export const auth = betterAuth({
   },
 
   callbacks: {
-    jwt({ token, user }) {
+    async session({ token, user }: { token: any; user: any }) {
       if (user) {
         token.userId = user.id;
         token.role = user.role;

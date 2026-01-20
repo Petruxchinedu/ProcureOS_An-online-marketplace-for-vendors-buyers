@@ -1,13 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserRole } from "../modules/users/user.types.js";
+
+// Define the Enum properly
+export enum UserRole {
+  BUYER = "BUYER",
+  VENDOR = "VENDOR",
+  ADMIN = "ADMIN"
+}
 
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
     role: UserRole;
     organizationId: string;
-  };
+  }
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {

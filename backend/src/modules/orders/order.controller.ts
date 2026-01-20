@@ -18,7 +18,7 @@ export const createOrderFromRFQ = async (req: Request, res: Response) => {
   const rfq = await RFQModel.findById(rfqId);
   if (!rfq) return res.status(404).json({ message: "RFQ not found" });
 
-  if (rfq.buyerOrganizationId.toString() !== req.user.organizationId) {
+  if (rfq.buyerOrganizationId.toString() !== req.user!.organizationId) {
     return res.status(403).json({ message: "Access denied" });
   }
 
@@ -37,7 +37,7 @@ export const createOrderFromRFQ = async (req: Request, res: Response) => {
     unitPrice,
     totalAmount,
     status: OrderStatus.CREATED,
-    createdBy: req.user.userId,
+    createdBy: req.user!.userId,
   });
 
   const escrow = await EscrowModel.create({
@@ -64,7 +64,7 @@ export const markOrderFulfilled = async (req: Request, res: Response) => {
   const order = await OrderModel.findById(orderId);
   if (!order) return res.status(404).json({ message: "Order not found" });
 
-  if (order.vendorOrganizationId.toString() !== req.user.organizationId) {
+  if (order.vendorOrganizationId.toString() !== req.user!.organizationId) {
     return res.status(403).json({ message: "Access denied" });
   }
 

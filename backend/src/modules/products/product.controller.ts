@@ -35,7 +35,7 @@ export const createProduct = async (req: any, res: any) => {
  */
 export const getVendorProducts = async (req: Request, res: Response) => {
   const products = await ProductModel.find({
-    vendorOrganizationId: req.user.organizationId,
+    vendorOrganizationId: req.user!.organizationId,
   }).sort({ createdAt: -1 });
 
   return res.status(200).json(products);

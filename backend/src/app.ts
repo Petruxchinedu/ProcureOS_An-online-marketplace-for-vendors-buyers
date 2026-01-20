@@ -17,7 +17,7 @@ import rfqRoutes from "./modules/rfq/rfq.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 
 // Import your RFQ model for the webhook (ensure path is correct and has .js)
-import { RFQ } from "./modules/rfq/rfq.model.js"; 
+import IRFQ  from "./modules/rfq/rfq.model.js"
 import Stripe from 'stripe';
 
 dotenv.config();
@@ -60,7 +60,7 @@ app.post("/api/payments/webhook", express.raw({ type: 'application/json' }), asy
     const rfqId = session.metadata?.rfqId;
 
     if (rfqId) {
-      await RFQ.findByIdAndUpdate(rfqId, { status: 'PAID' });
+      await IRFQ.findByIdAndUpdate(rfqId, { status: 'PAID' });
       console.log(`✅ RFQ ${rfqId} marked as PAID`);
     }
   }
