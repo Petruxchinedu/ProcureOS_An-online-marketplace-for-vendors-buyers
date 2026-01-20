@@ -9,7 +9,7 @@ const router = Router();
 router.post(
   "/orders/:orderId/confirm",
   requireAuth,
-  requireRole(UserRole.BUYER),
+  requireRole(UserRole.BUYER) as any,
   confirmDeliveryAndReleaseEscrow
 );
 

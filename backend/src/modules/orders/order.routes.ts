@@ -12,14 +12,14 @@ const router = Router();
 router.post(
   "/rfq/:rfqId",
   requireAuth,
-  requireRole(UserRole.BUYER),
+  requireRole(UserRole.BUYER) as any,
   createOrderFromRFQ
 );
 
 router.post(
   "/:orderId/fulfill",
   requireAuth,
-  requireRole(UserRole.VENDOR),
+  requireRole(UserRole.VENDOR) as any,
   markOrderFulfilled
 );
 

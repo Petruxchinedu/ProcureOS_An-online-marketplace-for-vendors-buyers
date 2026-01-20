@@ -24,12 +24,11 @@ router.use(requireAuth);
 /// ... existing imports
 
 // 1. Specific sub-paths FIRST
-router.get("/list/buyer", requireRole(UserRole.BUYER), getBuyerRFQs);
-router.get("/list/vendor", requireRole(UserRole.VENDOR), getVendorRFQs);
+router.get("/list/buyer", requireRole(UserRole.BUYER) as any, getBuyerRFQs);
+router.get("/list/vendor", requireRole(UserRole.VENDOR) as any, getVendorRFQs);
 
 // 2. Resource creation
-router.post("/", requireRole(UserRole.BUYER), createRFQ);
-
+router.post("/", requireRole(UserRole.BUYER) as any, createRFQ as any);
 // 3. The dynamic ID route LAST
 // Now, this only catches /api/rfq/ANY_ID, but NOT /api/rfq/list/...
 router.get("/:id", getRFQById);
