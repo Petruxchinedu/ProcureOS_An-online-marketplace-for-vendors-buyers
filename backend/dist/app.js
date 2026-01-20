@@ -21,7 +21,7 @@ const escrow_routes_js_1 = __importDefault(require("./modules/escrow/escrow.rout
 const rfq_routes_js_1 = __importDefault(require("./modules/rfq/rfq.routes.js"));
 const payment_routes_js_1 = __importDefault(require("./modules/payment/payment.routes.js"));
 // Import your RFQ model for the webhook (ensure path is correct and has .js)
-const rfq_model_js_1 = require("./modules/rfq/rfq.model.js");
+const rfq_model_js_1 = __importDefault(require("./modules/rfq/rfq.model.js"));
 const stripe_1 = __importDefault(require("stripe"));
 dotenv_1.default.config();
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY);
@@ -52,7 +52,7 @@ exports.app.post("/api/payments/webhook", express_1.default.raw({ type: 'applica
         const session = event.data.object;
         const rfqId = session.metadata?.rfqId;
         if (rfqId) {
-            await rfq_model_js_1.RFQ.findByIdAndUpdate(rfqId, { status: 'PAID' });
+            await rfq_model_js_1.default.findByIdAndUpdate(rfqId, { status: 'PAID' });
             console.log(`✅ RFQ ${rfqId} marked as PAID`);
         }
     }

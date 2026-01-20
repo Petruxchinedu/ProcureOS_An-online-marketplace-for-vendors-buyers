@@ -3,8 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authorize = exports.authenticate = void 0;
+exports.authorize = exports.authenticate = exports.UserRole = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// Define the Enum properly
+var UserRole;
+(function (UserRole) {
+    UserRole["BUYER"] = "BUYER";
+    UserRole["VENDOR"] = "VENDOR";
+    UserRole["ADMIN"] = "ADMIN";
+})(UserRole || (exports.UserRole = UserRole = {}));
 const authenticate = (req, res, next) => {
     // 1. Try to get token from Authorization Header or Cookies
     const authHeader = req.headers.authorization;

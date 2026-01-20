@@ -10,7 +10,7 @@ const user_model_js_1 = require("../modules/users/user.model.js");
 exports.auth = (0, better_auth_1.betterAuth)({
     providers: {
         credentials: {
-            async authorize(credentials) {
+            authorize: async (credentials) => {
                 const { email, password } = credentials;
                 const user = await user_model_js_1.UserModel.findOne({ email })
                     .select("+passwordHash")
@@ -36,7 +36,7 @@ exports.auth = (0, better_auth_1.betterAuth)({
         strategy: "jwt",
     },
     callbacks: {
-        jwt({ token, user }) {
+        async session({ token, user }) {
             if (user) {
                 token.userId = user.id;
                 token.role = user.role;

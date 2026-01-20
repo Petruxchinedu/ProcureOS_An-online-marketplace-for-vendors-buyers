@@ -12,11 +12,17 @@ const createNotification = async ({ userId, type, title, message, email, metadat
         metadata,
     });
     if (email) {
-        await (0, mailer_js_1.sendEmail)({
-            to: email,
-            subject: title,
-            html: `<p>${message}</p>`,
-        });
+        try {
+            await (0, mailer_js_1.sendEmail)({
+                to: email,
+                subject: title,
+                html: `<p>${message}</p>`,
+            });
+        }
+        catch (error) {
+            console.error("Email notification failed to send:", error);
+            // We don't throw here so the notification record still exists even if email fails
+        }
     }
     return notification;
 };
