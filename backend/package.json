@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-"dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc && ls dist",   
     "start": "node dist/server.js"
   },
   "keywords": [],
