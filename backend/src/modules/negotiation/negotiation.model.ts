@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { MessageSenderRole } from "./negotiation.types";
+import { MessageSenderRole } from "./negotiation.types.js";
 
 const NegotiationMessageSchema = new Schema(
   {

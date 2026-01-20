@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { OrderModel } from "../orders/order.model";
-import { EscrowModel } from "./escrow.model";
-import { OrderStatus } from "../orders/order.types";
-import { EscrowStatus } from "./escrow.types";
+import { OrderModel } from "../orders/order.model.js";
+import { EscrowModel } from "./escrow.model.js";
+import { OrderStatus } from "../orders/order.types.js";
+import { EscrowStatus } from "./escrow.types.js";
 import { UserModel } from "../users/user.model";
-import { createNotification } from "../notification/notification.service";
-import { NotificationType } from "../notification/notification.types";
+import { createNotification } from "../notification/notification.service.js";
+import { NotificationType } from "../notification/notification.types.js";
 
 /**
  * Buyer confirms delivery → releases escrow

@@ -2,7 +2,7 @@ import { Schema, model, Types } from "mongoose";
 import {
   OrganizationType,
   OrganizationStatus,
-} from "./organization.types";
+} from "./organization.types.js";
 
 export interface OrganizationDocument {
   _id: Types.ObjectId;

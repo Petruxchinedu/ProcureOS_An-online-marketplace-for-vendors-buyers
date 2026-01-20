@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import { NegotiationMessageModel } from "./negotiation.model";
-import { MessageSenderRole } from "./negotiation.types";
-import { assertRFQParticipant } from "./negotiation.guard";
-import { createNotification } from "../notification/notification.service";
-import { NotificationType } from "../notification/notification.types";
-import { UserModel } from "../users/user.model";
-import { RFQModel } from "../rfq/rfq.model";
-
+import { NegotiationMessageModel } from "./negotiation.model.js";
+import { MessageSenderRole } from "./negotiation.types.js";
+import { assertRFQParticipant } from "./negotiation.guard.js";
+import { createNotification } from "../notification/notification.service.js";
+import { NotificationType } from "../notification/notification.types.js";
+import { UserModel } from "../users/user.model.js";
+import { RFQModel } from "../rfq/rfq.model.js";
 /**
  * Send message in negotiation
  */

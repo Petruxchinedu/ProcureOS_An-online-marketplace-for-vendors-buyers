@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import RFQ from "../rfq/rfq.model";
+import RFQ from "../rfq/rfq.model.js";
 import { Request, Response } from "express";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

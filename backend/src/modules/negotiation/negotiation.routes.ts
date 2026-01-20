@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   sendNegotiationMessage,
   getNegotiationThread,
-} from "./negotiation.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
+} from "./negotiation.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
 
 const router = Router();
 

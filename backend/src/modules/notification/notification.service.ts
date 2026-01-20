@@ -1,9 +1,8 @@
-import { NotificationModel } from "./notification.model";
-import { NotificationType } from "./notification.types";
-import { sendEmail } from "../../utils/mailer";
-import { createNotification } from "../notification/notification.service";
-import { NotificationType } from "../notification/notification.types";
-import { UserModel } from "../users/user.model";
+import { NotificationModel } from "./notification.model.js";
+import { NotificationType } from "./notification.types.js";
+import { sendEmail } from "../../utils/mailer.js";
+import { createNotification } from "./notification.service.js"; // Note: removed redundant folder jump if you're already in notification folder
+import { UserModel } from "../users/user.model.js";
 
 interface CreateNotificationInput {
   userId: string;

@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
-import { RFQModel } from "./rfq.model";
-import { ProductModel } from "../products/product.model";
-import Product from "../products/product.model"; 
-import RFQ from "./rfq.model"; 
-import { RFQStatus } from "./rfq.types";
-import { createNotification } from "../notification/notification.service";
-import { NotificationType } from "../notification/notification.types";
-import { UserModel } from "../users/user.model";
+// Consolidate imports: Using both the named model and the default if necessary
+import { RFQModel } from "./rfq.model.js";
+import RFQ from "./rfq.model.js"; 
+import { ProductModel } from "../products/product.model.js";
+import Product from "../products/product.model.js"; 
 
+import { RFQStatus } from "./rfq.types.js";
+import { createNotification } from "../notification/notification.service.js";
+import { NotificationType } from "../notification/notification.types.js";
+import { UserModel } from "../users/user.model.js";
 /**
  * Buyer creates RFQ
  */

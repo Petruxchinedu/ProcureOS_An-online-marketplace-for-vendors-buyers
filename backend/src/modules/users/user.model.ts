@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { UserRole } from "./user.types";
+import { UserRole } from "./user.types.js";
 
 export interface UserDocument {
   _id: Types.ObjectId;

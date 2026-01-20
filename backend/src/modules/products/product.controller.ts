@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ProductModel } from "./product.model";
-import { ProductStatus } from "./product.types";
+import { ProductModel } from "./product.model.js";
+import { ProductStatus } from "./product.types.js";
 import Product from "./product.model"; // Ensure your model path is correct
 
 /**

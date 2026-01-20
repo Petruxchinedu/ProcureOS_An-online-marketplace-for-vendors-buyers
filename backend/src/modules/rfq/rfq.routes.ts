@@ -6,10 +6,10 @@ import {
   getRFQById, 
   updateRFQStatus, 
   respondToRFQ 
-} from "./rfq.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
-import { requireRole } from "../../middlewares/requireRole";
-import { UserRole } from "../users/user.types";
+} from "./rfq.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
+import { requireRole } from "../../middlewares/requireRole.js";
+import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 

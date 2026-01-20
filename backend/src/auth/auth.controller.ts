@@ -2,12 +2,14 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { UserModel } from "../modules/users/user.model";
-import { OrganizationModel } from "../modules/organizations/organization.model";
-import { UserRole } from "../modules/users/user.types";
-import { OrganizationType } from "../modules/organizations/organization.types";
-import { sendEmail } from "../utils/mailer";
-import { AuthRequest } from "./auth.middleware";
+
+// Added .js extensions to all local file imports
+import { UserModel } from "../modules/users/user.model.js";
+import { OrganizationModel } from "../modules/organizations/organization.model.js";
+import { UserRole } from "../modules/users/user.types.js";
+import { OrganizationType } from "../modules/organizations/organization.types.js";
+import { sendEmail } from "../utils/mailer.js";
+import { AuthRequest } from "./auth.middleware.js";
 
 /** HELPERS */
 const generateToken = (): string => crypto.randomBytes(32).toString("hex");

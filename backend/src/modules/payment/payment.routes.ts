@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createCheckoutSession } from "./payment.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
+import { createCheckoutSession } from "./payment.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
 
 const router = Router();
 

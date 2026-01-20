@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import bcrypt from "bcryptjs";
-import { UserModel } from "../modules/users/user.model";
+import { UserModel } from "../modules/users/user.model.js";
 
 export const auth = betterAuth({
   providers: {

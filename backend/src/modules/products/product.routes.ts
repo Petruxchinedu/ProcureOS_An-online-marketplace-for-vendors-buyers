@@ -7,10 +7,10 @@ import {
   getMyProducts, 
   deleteProduct,
   updateProduct
-} from "./product.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
-import { requireRole } from "../../middlewares/requireRole";
-import { UserRole } from "../users/user.types";
+} from "./product.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
+import { requireRole } from "../../middlewares/requireRole.js";
+import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 // 2. PROTECTED VENDOR ROUTES (Keep security here)

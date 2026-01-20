@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { RFQModel } from "../rfq/rfq.model";
-import { OrderModel } from "./order.model";
-import { EscrowModel } from "../escrow/escrow.model";
-import { RFQStatus } from "../rfq/rfq.types";
-import { OrderStatus } from "./order.types";
-import { UserModel } from "../users/user.model";
-import { createNotification } from "../notification/notification.service";
-import { NotificationType } from "../notification/notification.types";
+import { RFQModel } from "../rfq/rfq.model.js";
+import { OrderModel } from "./order.model.js";
+import { EscrowModel } from "../escrow/escrow.model.js";
+import { RFQStatus } from "../rfq/rfq.types.js";
+import { OrderStatus } from "./order.types.js";
+import { UserModel } from "../users/user.model.js";
+import { createNotification } from "../notification/notification.service.js";
+import { NotificationType } from "../notification/notification.types.js";
 
 /**
  * Buyer accepts RFQ → creates order

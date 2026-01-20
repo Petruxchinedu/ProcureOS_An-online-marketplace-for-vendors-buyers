@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { EscrowStatus } from "./escrow.types";
+import { EscrowStatus } from "./escrow.types.js";
 
 const EscrowSchema = new Schema(
   {

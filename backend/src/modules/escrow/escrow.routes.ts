@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { confirmDeliveryAndReleaseEscrow } from "./escrow.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
-import { requireRole } from "../../middlewares/requireRole";
-import { UserRole } from "../users/user.types";
+import { confirmDeliveryAndReleaseEscrow } from "./escrow.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
+import { requireRole } from "../../middlewares/requireRole.js";
+import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 

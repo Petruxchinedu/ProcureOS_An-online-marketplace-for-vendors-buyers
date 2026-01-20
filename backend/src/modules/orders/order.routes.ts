@@ -2,10 +2,10 @@ import { Router } from "express";
 import {
   createOrderFromRFQ,
   markOrderFulfilled,
-} from "./order.controller";
-import { requireAuth } from "../../middlewares/requireAuth";
-import { requireRole } from "../../middlewares/requireRole";
-import { UserRole } from "../users/user.types";
+} from "./order.controller.js";
+import { requireAuth } from "../../middlewares/requireAuth.js";
+import { requireRole } from "../../middlewares/requireRole.js";
+import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 
