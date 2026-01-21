@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { 
   ArrowLeft, CheckCircle, XCircle, Package, User, 
   Loader2, DollarSign, MessageSquare, ShieldCheck, 
-  Zap, TrendingUp, RefreshCcw 
+  Zap, TrendingUp, RefreshCcw, Tag, box 
 } from "lucide-react";
 import Link from "next/link";
 
@@ -17,7 +17,6 @@ export default function VendorRFQDetail() {
   const router = useRouter();
   const queryClient = useQueryClient();
   
-  // State for Counter Offer
   const [isCountering, setIsCountering] = useState(false);
   const [counterPrice, setCounterPrice] = useState("");
 
@@ -31,7 +30,6 @@ export default function VendorRFQDetail() {
 
   const updateStatus = useMutation({
     mutationFn: async ({ status, price }: { status: string; price?: number }) => {
-      // Extended to handle Counter-Offers via the price body
       return await api.patch(`/rfq/${id}/status`, { 
         status, 
         vendorCounterPrice: price 
@@ -56,10 +54,8 @@ export default function VendorRFQDetail() {
 
   if (!rfq) return <div className="p-20 text-center text-white font-black">RFQ DATA NOT FOUND.</div>;
 
-  // Business Logic: Calculate the delta
   const totalOfferValue = rfq.quantity * rfq.targetUnitPrice;
-  const retailUnitPrice = rfq.productId?.pricePerUnit || 0;
-  const isBelowRetail = rfq.targetUnitPrice < retailUnitPrice;
+  const product = rfq.productId; // The product data is here
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 pb-24">
@@ -81,8 +77,43 @@ export default function VendorRFQDetail() {
 
       <main className="max-w-6xl mx-auto px-8 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* LEFT SECTION: INTEL & DATA */}
+        {/* LEFT SECTION: INTEL & PRODUCT DATA */}
         <div className="lg:col-span-7 space-y-8">
+          
+          {/* PRODUCT VISUALIZATION CARD */}
+          <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[3rem] border border-blue-900/30 overflow-hidden shadow-2xl p-8">
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+              <div className="w-full md:w-48 h-48 bg-black/40 rounded-[2rem] border border-white/5 overflow-hidden flex-shrink-0">
+                {product?.images?.[0] ? (
+                  <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-blue-500/20">
+                    <Package size={64} />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[8px] font-black text-blue-400 uppercase tracking-widest">Selected Asset</span>
+                  <span className="text-slate-500 text-[10px] font-bold">Category: {product?.category || "Industrial"}</span>
+                </div>
+                <h2 className="text-3xl font-[1000] tracking-tighter text-white uppercase italic leading-tight">
+                  {product?.name || "Unknown Product"}
+                </h2>
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Market Price</p>
+                    <p className="text-lg font-black text-white">${product?.pricePerUnit || 0}</p>
+                  </div>
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">In Stock</p>
+                    <p className="text-lg font-black text-blue-400">{product?.stock || 0} Units</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-[#0F172A] rounded-[3rem] border border-blue-900/30 overflow-hidden shadow-2xl">
             <div className="p-10 border-b border-blue-900/20 flex justify-between items-start">
               <div>
@@ -97,7 +128,6 @@ export default function VendorRFQDetail() {
             </div>
 
             <div className="p-10">
-              {/* CORE METRICS GRID */}
               <div className="grid grid-cols-2 gap-6 mb-10">
                 <div className="bg-[#1E293B]/40 p-6 rounded-[2rem] border border-blue-900/10 relative overflow-hidden group">
                   <Package className="absolute -right-2 -bottom-2 w-16 h-16 text-white/5 group-hover:text-blue-500/10 transition-colors" />
@@ -122,7 +152,6 @@ export default function VendorRFQDetail() {
                  </div>
               </div>
 
-              {/* MESSAGE BOX */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <MessageSquare size={14} className="text-blue-500" />
@@ -138,14 +167,13 @@ export default function VendorRFQDetail() {
 
         {/* RIGHT SECTION: EXECUTIVE ACTIONS */}
         <div className="lg:col-span-5 space-y-6">
-          {/* DEAL PROJECTION CARD */}
           <div className="bg-blue-600 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-blue-600/30 relative overflow-hidden group">
             <Zap className="absolute -right-4 -top-4 w-32 h-32 text-white/10 rotate-12" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100/60 mb-2">Contract Liquidity</p>
             <h3 className="text-5xl font-[1000] tracking-tighter">${totalOfferValue.toLocaleString()}</h3>
             <div className="mt-8 flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-white/10 backdrop-blur-md">
               <TrendingUp size={16} className="text-emerald-400" />
-              <p className="text-[10px] font-bold text-blue-50 tracking-tight uppercase italic">Includes platform escrow fee</p>
+              <p className="text-[10px] font-bold text-blue-50 tracking-tight uppercase italic">Total Negotiated Value</p>
             </div>
           </div>
 
@@ -154,16 +182,14 @@ export default function VendorRFQDetail() {
             <h2 className="text-2xl font-[1000] tracking-tighter mb-8 uppercase text-center">Execute Decision</h2>
             
             <div className="space-y-4">
-              {/* ACCEPT BUTTON */}
               <button 
                 onClick={() => updateStatus.mutate({ status: "ACCEPTED" })}
                 disabled={updateStatus.isPending || isCountering}
-                className="w-full py-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-emerald-200 transition-all active:scale-95"
+                className="w-full py-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-emerald-200 transition-all active:scale-95 disabled:opacity-50"
               >
                 <CheckCircle size={18} /> Approve Contract
               </button>
 
-              {/* COUNTER OFFER LOGIC */}
               {!isCountering ? (
                 <button 
                   onClick={() => setIsCountering(true)}
@@ -181,15 +207,16 @@ export default function VendorRFQDetail() {
                       placeholder="Enter Counter Unit Price..."
                       value={counterPrice}
                       onChange={(e) => setCounterPrice(e.target.value)}
-                      className="w-full pl-12 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-[1.5rem] focus:border-blue-500 transition-all outline-none font-black"
+                      className="w-full pl-12 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-[1.5rem] focus:border-blue-500 transition-all outline-none font-black text-lg"
                     />
                   </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => updateStatus.mutate({ status: "NEGOTIATING", price: Number(counterPrice) })}
+                      disabled={updateStatus.isPending}
                       className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase"
                     >
-                      Send Offer
+                      {updateStatus.isPending ? "Sending..." : "Send Offer"}
                     </button>
                     <button 
                       onClick={() => setIsCountering(false)}
