@@ -12,7 +12,7 @@ import {
   TrendingUp, BarChart3, Layers, Menu, ShoppingCart, BookOpen, Headphones
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { cn } from "@/lib/utils"; // Ensure you have this utility or use template literals
+import { cn } from "@/lib/utils";
 
 export default function EliteBuyerDashboard() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -67,16 +67,22 @@ export default function EliteBuyerDashboard() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 bg-[#020617] z-[100] p-10 flex flex-col"
           >
             <div className="flex justify-between items-center mb-16">
-              <span className="text-xl font-black italic tracking-tighter uppercase">Menu</span>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-full"><X /></button>
+              <span className="text-xl font-black italic tracking-tighter uppercase text-white">Navigation</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="p-3 bg-white/5 border border-white/10 rounded-2xl text-white"
+              >
+                <X size={24}/>
+              </button>
             </div>
-            <div className="space-y-8">
+            <div className="space-y-6">
               <MobileLink href="/buyer/products" icon={ShoppingCart} label="Marketplace" onClick={() => setIsMobileMenuOpen(false)} />
               <MobileLink href="/buyer/rfq/list" icon={BookOpen} label="Ledger" onClick={() => setIsMobileMenuOpen(false)} />
               <MobileLink href="/support" icon={Headphones} label="Support" onClick={() => setIsMobileMenuOpen(false)} />
@@ -85,7 +91,7 @@ export default function EliteBuyerDashboard() {
         )}
       </AnimatePresence>
 
-      {/* NOTIFICATION OVERLAY (Keep as per original) */}
+      {/* NOTIFICATION OVERLAY */}
       <AnimatePresence>
         {isNotifOpen && (
           <>
@@ -107,7 +113,7 @@ export default function EliteBuyerDashboard() {
       </AnimatePresence>
 
       {/* NAV BAR */}
-      <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-md px-10 py-5">
+      <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-md px-6 lg:px-10 py-5">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           <Link href="/buyer/dashboard" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
@@ -129,12 +135,14 @@ export default function EliteBuyerDashboard() {
                 <Bell size={22} />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full" />
               </button>
+              
+              {/* User Avatar - Hidden on very small screens */}
               <div className="hidden sm:flex w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 border border-white/10 items-center justify-center font-black text-xs">JD</div>
               
-              {/* MOBILE TOGGLE */}
+              {/* MOBILE MENU TOGGLE ICON - NOW VISIBLE ON SMALL SCREENS */}
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 text-slate-400 hover:text-white"
+                className="lg:hidden p-2 text-slate-400 hover:text-white bg-white/5 border border-white/5 rounded-xl ml-2"
               >
                 <Menu size={24} />
               </button>
@@ -253,10 +261,10 @@ function MobileLink({ href, icon: Icon, label, onClick }: any) {
     <Link 
       href={href} 
       onClick={onClick}
-      className="flex items-center gap-6 text-3xl font-[1000] uppercase italic tracking-tighter text-slate-200 hover:text-blue-500 transition-colors"
+      className="flex items-center gap-6 text-3xl font-[1000] uppercase italic tracking-tighter text-slate-200 hover:text-blue-500 transition-colors group"
     >
-      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-blue-500">
-        <Icon size={24} />
+      <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+        <Icon size={28} />
       </div>
       {label}
     </Link>
