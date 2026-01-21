@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/vendor/layout,_N_T_/vendor/fufillment/layout,_N_T_/vendor/fufillment/page,_N_T_/vendor/fufillment"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/vendor/fufillment/__PAGE__",
+    "/vendor/fufillment",
+    "/vendor",
+    "/_index",
+    "/_head"
+  ]
+}

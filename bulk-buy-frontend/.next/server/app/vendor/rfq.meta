@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/vendor/layout,_N_T_/vendor/rfq/layout,_N_T_/vendor/rfq/page,_N_T_/vendor/rfq"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/vendor/rfq/__PAGE__",
+    "/vendor/rfq",
+    "/vendor",
+    "/_index",
+    "/_head"
+  ]
+}

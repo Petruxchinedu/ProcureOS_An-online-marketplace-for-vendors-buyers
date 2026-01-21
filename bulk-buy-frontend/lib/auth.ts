@@ -25,9 +25,8 @@ export const resetPassword = (data: {
 
 const API_BASE_URL = "http://localhost:5000/api"; // your backend port
 
-export const getMe = () => {
-  return axios.get(`${API_BASE_URL}/auth/me`, {
-    withCredentials: true, // if using cookies
-  });
+export const getMe = async (token?: string) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  return api.get("/auth/me", { headers });
 };
 

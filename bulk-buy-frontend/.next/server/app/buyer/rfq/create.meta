@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/buyer/layout,_N_T_/buyer/rfq/layout,_N_T_/buyer/rfq/create/layout,_N_T_/buyer/rfq/create/page,_N_T_/buyer/rfq/create"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/buyer/rfq/create/__PAGE__",
+    "/buyer/rfq/create",
+    "/buyer/rfq",
+    "/buyer",
+    "/_index",
+    "/_head"
+  ]
+}
