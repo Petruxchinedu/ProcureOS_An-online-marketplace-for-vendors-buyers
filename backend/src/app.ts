@@ -28,13 +28,22 @@ export const app = express();
 /* Global Middlewares */
 app.use(cookieParser());
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://procure-os-an-online-marketplace-fo.vercel.app'
+];
+
 app.use(cors({
-  // 2. Dynamic Origin: Allows Localhost in dev and Vercel in production
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL as string] 
-    : 'http://localhost:3000', 
-  
-  credentials: true, 
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
