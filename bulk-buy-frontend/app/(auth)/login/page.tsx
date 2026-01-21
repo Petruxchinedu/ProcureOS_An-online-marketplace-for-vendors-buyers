@@ -28,41 +28,41 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
- const onSubmit = async (data: LoginFormData) => {
-  setIsLoading(true);
-  try {
-    const res = await loginUser(data);
-    const token = res.data.token || res.data.accessToken; 
-    const user = res.data.user;
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    try {
+      const res = await loginUser(data);
+      const token = res.data.token || res.data.accessToken; 
+      const user = res.data.user;
 
-    if (!token) throw new Error("No token received");
+      if (!token) throw new Error("No token received");
 
-    localStorage.setItem("token", token);
-    document.cookie = `accessToken=${token}; path=/; max-age=86400; SameSite=Lax`;
-    
-    await refreshUser(token);      
-    toast.success("Identity Verified. Welcome.");
+      localStorage.setItem("token", token);
+      document.cookie = `accessToken=${token}; path=/; max-age=86400; SameSite=Lax`;
+      
+      await refreshUser(token);      
+      toast.success("Identity Verified. Welcome.");
 
-    if (user.role === "VENDOR") {
-      router.push("/vendor/rfq"); 
-    } else {
-      router.push("/dashboard");
-    }
-  } catch (err: any) {
+      if (user.role === "VENDOR") {
+        router.push("/vendor/rfq"); 
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
       setIsLoading(false); 
-  if (err.response?.status === 401) {
-    setError("password", {
-      type: "manual",
-      message: "Wrong email or password",
-    });
-    toast.error("Invalid credentials");
-  } else if (err.response?.status === 403) {
-    toast.error("Please verify your email first");
-  } else {
-    toast.error(err.response?.data?.message || "Authentication Failed");
-  }
-}
-};
+      if (err.response?.status === 401) {
+        setError("password", {
+          type: "manual",
+          message: "Wrong email or password",
+        });
+        toast.error("Invalid credentials");
+      } else if (err.response?.status === 403) {
+        toast.error("Please verify your email first");
+      } else {
+        toast.error(err.response?.data?.message || "Authentication Failed");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#020617] relative overflow-hidden px-4">
@@ -114,6 +114,7 @@ export default function LoginPage() {
               <div className="flex justify-between items-center ml-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Access Key</label>
                 <Link href="/forgot-password" className="text-[10px] font-black text-blue-500 uppercase tracking-widest hover:underline">Lost Key?</Link>
+              </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
                 <input
