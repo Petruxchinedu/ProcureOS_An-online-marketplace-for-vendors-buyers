@@ -9,12 +9,14 @@ import {
   ShoppingBag, ArrowRight, ShieldCheck, Zap,
   Clock, CheckCircle2, Package, 
   ArrowUpRight, Bell, CreditCard, X, Truck,
-  TrendingUp, BarChart3, Layers
+  TrendingUp, BarChart3, Layers, Menu, ShoppingCart, BookOpen, Headphones
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { cn } from "@/lib/utils"; // Ensure you have this utility or use template literals
 
 export default function EliteBuyerDashboard() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 1. DATA ACQUISITION
   const { data: rfqs, isLoading: rfqsLoading } = useQuery({
@@ -30,7 +32,7 @@ export default function EliteBuyerDashboard() {
     queryFn: async () => (await api.get("/products")).data
   });
 
-  // 2. INTELLIGENT ANALYTICS (MOCK DATA FOR CHART)
+  // 2. INTELLIGENT ANALYTICS
   const chartData = [
     { name: 'Mon', spend: 4000 }, { name: 'Tue', spend: 3000 },
     { name: 'Wed', spend: 9000 }, { name: 'Thu', spend: 5000 },
@@ -60,21 +62,35 @@ export default function EliteBuyerDashboard() {
       
       {/* GLOW OVERLAYS */}
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full -z-10 pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/10 blur-[100px] rounded-full -z-10 pointer-events-none" />
 
-      {/* NOTIFICATION OVERLAY */}
+      {/* MOBILE MENU OVERLAY */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            className="fixed inset-0 bg-[#020617] z-[100] p-10 flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-16">
+              <span className="text-xl font-black italic tracking-tighter uppercase">Menu</span>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-full"><X /></button>
+            </div>
+            <div className="space-y-8">
+              <MobileLink href="/buyer/products" icon={ShoppingCart} label="Marketplace" onClick={() => setIsMobileMenuOpen(false)} />
+              <MobileLink href="/buyer/rfq/list" icon={BookOpen} label="Ledger" onClick={() => setIsMobileMenuOpen(false)} />
+              <MobileLink href="/support" icon={Headphones} label="Support" onClick={() => setIsMobileMenuOpen(false)} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* NOTIFICATION OVERLAY (Keep as per original) */}
       <AnimatePresence>
         {isNotifOpen && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsNotifOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]" 
-            />
-            <motion.div 
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0F172A]/90 backdrop-blur-2xl border-l border-white/10 z-[70] p-10 shadow-2xl"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsNotifOpen(false)} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]" />
+            <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0F172A]/90 backdrop-blur-2xl border-l border-white/10 z-[70] p-10 shadow-2xl">
               <div className="flex justify-between items-center mb-10">
                 <h2 className="text-xl font-black uppercase italic tracking-tighter">Activity Stream</h2>
                 <button onClick={() => setIsNotifOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
@@ -93,25 +109,35 @@ export default function EliteBuyerDashboard() {
       {/* NAV BAR */}
       <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-md px-10 py-5">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3 group">
+          <Link href="/buyer/dashboard" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
               <Zap size={22} fill="currentColor" />
             </div>
             <span className="text-2xl font-[1000] tracking-tighter uppercase italic text-white">PROCURE<span className="text-blue-500 text-opacity-80 underline decoration-blue-500/30">OS</span></span>
-          </div>
+          </Link>
 
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 lg:gap-8">
+            {/* DESKTOP LINKS */}
             <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                <Link href="/buyer/products/${product._id}" className="hover:text-blue-400 transition-colors">Marketplace</Link>
+                <Link href="/buyer/products" className="hover:text-blue-400 transition-colors">Marketplace</Link>
                 <Link href="/buyer/rfq/list" className="hover:text-blue-400 transition-colors">Ledger</Link>
                 <Link href="/support" className="hover:text-blue-400 transition-colors">Support</Link>
             </div>
-            <div className="flex items-center gap-4 border-l border-white/10 pl-8">
+            
+            <div className="flex items-center gap-2 lg:gap-4 border-l border-white/10 pl-4 lg:pl-8">
               <button onClick={() => setIsNotifOpen(true)} className="relative p-2 text-slate-400 hover:text-white transition-colors">
                 <Bell size={22} />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full" />
               </button>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 border border-white/10 flex items-center justify-center font-black text-xs">JD</div>
+              <div className="hidden sm:flex w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 border border-white/10 items-center justify-center font-black text-xs">JD</div>
+              
+              {/* MOBILE TOGGLE */}
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="lg:hidden p-2 text-slate-400 hover:text-white"
+              >
+                <Menu size={24} />
+              </button>
             </div>
           </div>
         </div>
