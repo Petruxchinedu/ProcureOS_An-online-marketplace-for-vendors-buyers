@@ -13,7 +13,7 @@ export default function VendorRFQListPage() {
     queryKey: ["vendor-rfqs"],
     queryFn: async () => {
       // 1. Verify this endpoint exactly matches your backend route
-      const res = await api.get("/rfq/vendor/my-rfqs"); 
+      const res = await api.get("/rfq/vendor/rfq"); 
       console.log("RFQ List Data:", res.data); // DEBUG LOG
       return res.data;
     }
