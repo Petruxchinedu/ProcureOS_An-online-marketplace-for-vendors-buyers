@@ -23,8 +23,7 @@ export const resetPassword = (data: {
   password: string;
 }) => api.post("/auth/reset-password", data);
 
-const API_BASE_URL = "http://localhost:5000/api"; // your backend port
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 export const getMe = async (token?: string) => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   return api.get("/auth/me", { headers });
