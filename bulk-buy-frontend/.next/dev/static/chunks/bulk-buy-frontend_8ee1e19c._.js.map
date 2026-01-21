@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/bless/OneDrive/Desktop/BULK-BUY-ENTERPRISE/bulk-buy-frontend/app/page.tsx"],"sourcesContent":["\"use client\";\n\nimport { useEffect } from \"react\";\nimport { useRouter } from \"next/navigation\";\n\nexport default function RootPage() {\n  const router = useRouter();\n\n  useEffect(() => {\n    // Immediately move the user to the login screen\n    router.replace(\"/login\");\n  }, [router]);\n\n  return (\n    <div className=\"min-h-screen bg-[#020617] flex items-center justify-center\">\n      {/* Subtle loader while the redirect happens */}\n      <div className=\"w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin\" />\n    </div>\n  );\n}"],"names":[],"mappings":";;;;;AAEA;AACA;;;AAHA;;;AAKe,SAAS;;IACtB,MAAM,SAAS,IAAA,4RAAS;IAExB,IAAA,oTAAS;8BAAC;YACR,gDAAgD;YAChD,OAAO,OAAO,CAAC;QACjB;6BAAG;QAAC;KAAO;IAEX,qBACE,uUAAC;QAAI,WAAU;kBAEb,cAAA,uUAAC;YAAI,WAAU;;;;;;;;;;;AAGrB;GAdwB;;QACP,4RAAS;;;KADF"}},
+    {"offset": {"line": 56, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/bless/OneDrive/Desktop/BULK-BUY-ENTERPRISE/bulk-buy-frontend/node_modules/.pnpm/next%4016.1.1_%40babel%2Bcore%407.2_39b5f7bf9254f45631682e0d132e5fc2/node_modules/next/navigation.js"],"sourcesContent":["module.exports = require('./dist/client/components/navigation')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/bulk-buy-frontend/middleware.ts"],"sourcesContent":["import { NextResponse } from \"next/server\";\r\nimport type { NextRequest } from \"next/server\";\r\n\r\nexport function middleware(req: NextRequest) {\r\n  const token = req.cookies.get(\"accessToken\")?.value;\r\n\r\n  const protectedRoutes = [\"/dashboard\"];\r\n\r\n  if (\r\n    protectedRoutes.some((path) =>\r\n      req.nextUrl.pathname.startsWith(path)\r\n    )\r\n  ) {\r\n    if (!token) {\r\n      return NextResponse.redirect(\r\n        new URL(\"/login\", req.url)\r\n      );\r\n    }\r\n  }\r\n\r\n  return NextResponse.next();\r\n}\r\n\r\nexport const config = {\r\n  matcher: [\"/dashboard/:path*\"],\r\n};\r\n"],"names":[],"mappings":";;;;;;AAAA;AAAA;;AAGO,SAAS,WAAW,GAAgB;IACzC,MAAM,QAAQ,IAAI,OAAO,CAAC,GAAG,CAAC,gBAAgB;IAE9C,MAAM,kBAAkB;QAAC;KAAa;IAEtC,IACE,gBAAgB,IAAI,CAAC,CAAC,OACpB,IAAI,OAAO,CAAC,QAAQ,CAAC,UAAU,CAAC,QAElC;QACA,IAAI,CAAC,OAAO;YACV,OAAO,0UAAY,CAAC,QAAQ,CAC1B,IAAI,IAAI,UAAU,IAAI,GAAG;QAE7B;IACF;IAEA,OAAO,0UAAY,CAAC,IAAI;AAC1B;AAEO,MAAM,SAAS;IACpB,SAAS;QAAC;KAAoB;AAChC"}}]
+}

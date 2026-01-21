@@ -1,7 +1,7 @@
 # Dependency Directories
 **/node_modules/
 
-# Environment Variables (The most important part)
+# Environment Variables (The most important part) okay
 **/.env
 **/.env.local
 **/.env.development.local
