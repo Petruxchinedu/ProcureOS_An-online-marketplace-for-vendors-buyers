@@ -248,7 +248,20 @@ export default function EliteBuyerDashboard() {
 }
 
 // --- SUB-COMPONENTS FOR CLEANER CODE ---
-
+function MobileLink({ href, icon: Icon, label, onClick }: any) {
+  return (
+    <Link 
+      href={href} 
+      onClick={onClick}
+      className="flex items-center gap-6 text-3xl font-[1000] uppercase italic tracking-tighter text-slate-200 hover:text-blue-500 transition-colors"
+    >
+      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-blue-500">
+        <Icon size={24} />
+      </div>
+      {label}
+    </Link>
+  );
+}
 function StatCard({ label, value, sub, icon: Icon, highlight = false }: any) {
   return (
     <div className={`p-8 rounded-[2.5rem] border ${highlight ? 'bg-blue-600 border-blue-400 text-white shadow-2xl shadow-blue-500/20' : 'bg-[#0F172A] border-white/5 text-slate-300'}`}>
