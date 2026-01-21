@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import Confetti from "react-confetti"; // Optional: npm install react-confetti
 import { useState, useEffect } from "react";
+import { Lock } from "lucide-react";
 
 export default function PaymentSuccessPage() {
   const { id } = useParams();
@@ -123,8 +124,7 @@ export default function PaymentSuccessPage() {
 
           <div className="bg-blue-600 p-4 text-center">
             <p className="text-white text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                <Lock size={12} /> Transaction Hash: {Math.random().toString(36).substring(2, 15).toUpperCase()}
-            </p>
+<span className="inline-block"><Lock size={12} /></span> Transaction Hash: {Math.random().toString(36).substring(2, 15).toUpperCase()}            </p>
           </div>
         </div>
 
