@@ -28,7 +28,7 @@ export default function SupportTerminal() {
       {/* HEADER */}
       <nav className="border-b border-white/5 bg-[#020617]/80 backdrop-blur-md px-10 py-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/buyer/dashboard" className="flex items-center gap-3 group">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform">
               <Zap size={18} fill="currentColor" />
             </div>
