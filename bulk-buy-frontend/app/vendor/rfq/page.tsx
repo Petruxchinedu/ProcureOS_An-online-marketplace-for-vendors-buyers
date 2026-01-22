@@ -3,91 +3,117 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { 
-  Inbox, 
-  Calendar, 
-  ArrowRight, 
-  Loader2, 
-  Trash2, 
-  FileText, 
-  Zap, 
-  CheckCircle2, 
-  ShieldAlert 
+  Inbox, Calendar, ArrowRight, Loader2, Trash2, 
+  FileText, Zap, CheckCircle2, ShieldAlert, Package, LayoutDashboard
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export default function VendorRFQInbox() {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("leads");
 
-  // 1. Fetch Data
-  const { data: rfqs, isLoading, isError } = useQuery({
-  queryKey: ["vendor-rfqs"],
-  queryFn: async () => {
-    // Try the "my-rfqs" suffix which is more specific to the vendor's own leads
-    const res = await api.get("/rfq/vendor/my-rfqs"); 
-    console.log("Terminal Data Received:", res.data); // Look at your browser console!
-    return Array.isArray(res.data) ? res.data : [];
-  },
-  // Keep trying if it fails
-  retry: 1 
-});
-
-  // 2. Delete Mutation (Only for accepted deals)
-  const deleteMutation = useMutation({
-    mutationFn: async (rfqId: string) => {
-      return await api.delete(`/rfq/${rfqId}`);
+  // 1. Fetch Data with Fallback Logic
+  const { data: rfqs, isLoading } = useQuery({
+    queryKey: ["vendor-rfqs"],
+    queryFn: async () => {
+      // We use the most reliable endpoint discovered
+      const res = await api.get("/rfq/vendor/my-rfqs"); 
+      console.log("Terminal Raw Data:", res.data);
+      
+      // Senior Dev Note: Always handle variations in API response structures
+      const data = res.data;
+      if (Array.isArray(data)) return data;
+      if (data?.rfqs && Array.isArray(data.rfqs)) return data.rfqs;
+      if (data?.data && Array.isArray(data.data)) return data.data;
+      return [];
     },
+    retry: 2
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/rfq/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-rfqs"] });
-      toast.success("Record cleared from ledger");
-    },
-    onError: () => {
-      toast.error("Failed to purge record");
+      toast.success("Lead purged from terminal");
     }
   });
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.preventDefault(); // Prevent link navigation
-    if (confirm("Purge this finalized contract from your active view?")) {
-      deleteMutation.mutate(id);
-    }
-  };
-
   if (isLoading) return (
     <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center">
-      <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
-      <p className="text-slate-500 font-black tracking-[0.3em] text-xs uppercase">Syncing Leads...</p>
+      <div className="relative">
+        <Loader2 className="animate-spin text-blue-500 w-12 h-12" />
+        <div className="absolute inset-0 blur-xl bg-blue-500/20 animate-pulse" />
+      </div>
+      <p className="mt-6 text-slate-500 font-black tracking-[0.4em] text-[10px] uppercase">Syncing Neural Pipeline...</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 p-6 md:p-12">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* EXECUTIVE HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">Live Pipeline</span>
-            </div>
-            <h1 className="text-5xl font-[1000] tracking-tighter uppercase italic">Lead Inbox</h1>
-            <p className="text-slate-500 font-bold text-sm mt-2">Executive-grade monitoring of high-value procurement requests.</p>
+    <div className="min-h-screen bg-[#020617] text-slate-100">
+      {/* GLOBAL VENDOR NAV */}
+      <div className="border-b border-blue-900/20 bg-[#020617]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+             <h2 className="text-xl font-black italic tracking-tighter text-blue-500">PROCURE.<span className="text-white">OS</span></h2>
+             <nav className="flex gap-1 bg-slate-900/50 p-1 rounded-xl border border-white/5">
+                <button 
+                  onClick={() => setActiveTab("leads")}
+                  className={cn("px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", 
+                  activeTab === "leads" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-slate-500 hover:text-white")}
+                >
+                  Lead Box
+                </button>
+                <Link href="/vendor/inventory" className="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">
+                  Inventory
+                </Link>
+             </nav>
           </div>
-          <div className="bg-[#0F172A] border border-blue-900/30 px-6 py-3 rounded-2xl">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Pipeline Value</p>
-            <p className="text-2xl font-black text-emerald-500">
+          <div className="hidden md:flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-[8px] font-black text-slate-500 uppercase">System Status</p>
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter">Encrypted & Live</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto p-6 md:p-12">
+        {/* EXECUTIVE HEADER */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+              <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.5em]">Global Feed</span>
+            </div>
+            <h1 className="text-7xl font-[1000] tracking-tighter uppercase italic leading-none">Terminal</h1>
+            <p className="text-slate-500 font-bold text-sm mt-4 max-w-md italic border-l-2 border-blue-900/50 pl-4">
+              Real-time procurement matching and contract negotiation hub.
+            </p>
+          </div>
+          
+          <div className="bg-[#0F172A] border border-blue-900/30 p-8 rounded-[2.5rem] min-w-[280px] shadow-2xl">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <LayoutDashboard size={12} className="text-blue-500" /> Pipeline Value
+            </p>
+            <p className="text-4xl font-[1000] text-emerald-500 tracking-tighter italic">
               ${rfqs?.reduce((acc: number, r: any) => acc + (r.quantity * (r.targetUnitPrice || 0)), 0).toLocaleString()}
             </p>
           </div>
         </div>
 
-        <div className="grid gap-6">
+        {/* FEED */}
+        <div className="grid gap-8">
           {!rfqs || rfqs.length === 0 ? (
-            <div className="bg-[#0F172A] border-2 border-dashed border-blue-900/20 rounded-[3rem] p-32 text-center">
-              <Inbox className="mx-auto text-slate-800 mb-6" size={64} />
-              <p className="text-slate-500 font-black uppercase tracking-widest">No signals detected in the terminal.</p>
+            <div className="bg-[#0F172A]/50 border-2 border-dashed border-blue-900/20 rounded-[4rem] py-40 text-center">
+              <div className="relative inline-block mb-8">
+                <Inbox className="text-slate-800" size={80} />
+                <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full" />
+              </div>
+              <p className="text-slate-500 font-[1000] uppercase tracking-[0.4em] text-sm">Frequency Silent</p>
+              <p className="text-slate-700 text-[10px] font-black uppercase mt-4">Waiting for buyer signals...</p>
             </div>
           ) : (
             rfqs.map((rfq: any) => {
@@ -95,85 +121,71 @@ export default function VendorRFQInbox() {
               const dealValue = rfq.quantity * (rfq.vendorCounterPrice || rfq.targetUnitPrice || 0);
 
               return (
-                <div 
-                  key={rfq._id} 
-                  className={cn(
-                    "relative overflow-hidden bg-[#0F172A] border border-blue-900/20 rounded-[2.5rem] p-8 transition-all group hover:border-blue-500/40",
-                    isAccepted && "border-emerald-500/20 bg-emerald-500/[0.01]"
-                  )}
-                >
-                  <div className="flex flex-wrap md:flex-nowrap gap-8 items-center relative z-10">
-                    
+                <div key={rfq._id} className={cn(
+                  "group relative overflow-hidden bg-[#0F172A] border border-blue-900/20 rounded-[3rem] p-1 transition-all hover:border-blue-500/40",
+                  isAccepted && "border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.05)]"
+                )}>
+                  <div className="p-8 flex flex-wrap md:flex-nowrap gap-8 items-center relative z-10">
                     {/* Visual Indicator */}
                     <div className={cn(
-                      "w-20 h-20 rounded-[2rem] flex items-center justify-center shrink-0 border transition-transform group-hover:scale-110",
+                      "w-24 h-24 rounded-[2.5rem] flex items-center justify-center shrink-0 border transition-all duration-500 group-hover:rotate-[10deg]",
                       isAccepted ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-blue-500/10 border-blue-500/20 text-blue-400"
                     )}>
-                      {isAccepted ? <CheckCircle2 size={32} /> : <Zap size={32} className="fill-current" />}
+                      {isAccepted ? <CheckCircle2 size={40} /> : <Zap size={40} className="fill-current" />}
                     </div>
 
-                    {/* Product & Buyer Info */}
+                    {/* Info */}
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
+                      <div className="flex items-center gap-3 mb-4">
                         <span className={cn(
-                          "text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border",
-                          isAccepted ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                          "text-[9px] font-black uppercase tracking-widest px-4 py-1 rounded-full border shadow-sm",
+                          isAccepted ? "bg-emerald-500 text-black border-emerald-400" : "bg-blue-600 text-white border-blue-500"
                         )}>
                           {rfq.status}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-bold flex items-center gap-1">
+                        <span className="text-[10px] text-slate-500 font-black flex items-center gap-2">
                           <Calendar size={12} /> {new Date(rfq.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <h3 className="font-black text-2xl text-white leading-none tracking-tight mb-2 uppercase italic">{rfq.productId?.name}</h3>
-                      <p className="text-sm text-slate-400 font-bold">
-                        Buyer: <span className="text-slate-200">{rfq.buyerId?.organizationName || "Private Enterprise"}</span>
+                      <h3 className="font-[1000] text-3xl text-white tracking-tighter mb-2 uppercase italic group-hover:text-blue-400 transition-colors">
+                        {rfq.productId?.name || "Premium Asset"}
+                      </h3>
+                      <p className="text-sm text-slate-500 font-bold uppercase tracking-widest flex items-center gap-2">
+                        Client: <span className="text-slate-200">{rfq.buyerId?.organizationName || rfq.buyerId?.name || "Corporate"}</span>
                       </p>
                     </div>
 
-                    {/* Financial Projection */}
-                    <div className="px-8 md:border-x border-blue-900/20 text-right">
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Contract Value</p>
-                      <p className="text-3xl font-[1000] text-white tracking-tighter tabular-nums">
+                    {/* Money */}
+                    <div className="px-10 md:border-x border-blue-900/20 text-right">
+                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Proposed Value</p>
+                      <p className="text-4xl font-[1000] text-white tracking-tighter italic">
                         ${dealValue.toLocaleString()}
                       </p>
-                      <p className="text-[10px] text-emerald-500 font-black uppercase tracking-widest">
+                      <p className="text-[11px] text-emerald-500 font-black uppercase tracking-[0.2em] mt-2">
                         {rfq.quantity.toLocaleString()} Units
                       </p>
                     </div>
 
-                    {/* Action Hub */}
-                    <div className="flex flex-col gap-3 min-w-[200px]">
+                    {/* Actions */}
+                    <div className="flex flex-col gap-3 min-w-[220px]">
                       {isAccepted ? (
                         <div className="flex gap-2">
-                          <Link 
-                            href={`/vendor/invoice/${rfq._id}`}
-                            className="flex-1 bg-emerald-500 text-black py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                          >
+                          <Link href={`/vendor/invoice/${rfq._id}`} className="flex-1 bg-white text-black py-5 rounded-[1.5rem] flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl">
                             <FileText size={16} /> Invoice
                           </Link>
-                          {/* DELETE OPTION - ONLY FOR ACCEPTED DEALS */}
-                          <button 
-                            onClick={(e) => handleDelete(e, rfq._id)}
-                            className="p-4 bg-red-500/10 text-red-500 rounded-2xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all"
-                            title="Purge Record"
-                          >
-                            <Trash2 size={18} />
+                          <button onClick={() => { if(confirm("Purge?")) deleteMutation.mutate(rfq._id) }} className="p-5 bg-red-500/10 text-red-500 rounded-[1.5rem] border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">
+                            <Trash2 size={20} />
                           </button>
                         </div>
                       ) : (
-                        <Link 
-                          href={`/vendor/rfq/${rfq._id}`}
-                          className="w-full bg-blue-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-blue-600 transition-all group/btn"
-                        >
-                          Negotiation Terminal <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                        <Link href={`/vendor/rfq/${rfq._id}`} className="w-full bg-blue-600 text-white py-5 rounded-[1.5rem] flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-blue-600 transition-all shadow-xl group/btn">
+                          Enter Negotiation <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                         </Link>
                       )}
                     </div>
                   </div>
-
-                  {/* Aesthetic Background Pattern */}
-                  <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-blue-500/[0.02] to-transparent pointer-events-none" />
+                  {/* Visual Glow */}
+                  <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-blue-500/[0.03] to-transparent pointer-events-none" />
                 </div>
               );
             })
