@@ -21,13 +21,17 @@ export default function VendorRFQInbox() {
   const queryClient = useQueryClient();
 
   // 1. Fetch Data
-  const { data: rfqs, isLoading } = useQuery({
-    queryKey: ["vendor-rfqs"],
-    queryFn: async () => {
-      const res = await api.get("/rfq/vendor");
-      return Array.isArray(res.data) ? res.data : [];
-    }
-  });
+  const { data: rfqs, isLoading, isError } = useQuery({
+  queryKey: ["vendor-rfqs"],
+  queryFn: async () => {
+    // Try the "my-rfqs" suffix which is more specific to the vendor's own leads
+    const res = await api.get("/rfq/vendor/my-rfqs"); 
+    console.log("Terminal Data Received:", res.data); // Look at your browser console!
+    return Array.isArray(res.data) ? res.data : [];
+  },
+  // Keep trying if it fails
+  retry: 1 
+});
 
   // 2. Delete Mutation (Only for accepted deals)
   const deleteMutation = useMutation({
