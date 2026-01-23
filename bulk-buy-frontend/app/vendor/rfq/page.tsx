@@ -20,7 +20,7 @@ export default function VendorRFQInbox() {
     queryKey: ["vendor-rfqs"],
     queryFn: async () => {
       // We use the most reliable endpoint discovered
-      const res = await api.get("/rfq/vendor/my-rfqs"); 
+const res = await api.get("/rfq/list/vendor");
       console.log("Terminal Raw Data:", res.data);
       
       // Senior Dev Note: Always handle variations in API response structures

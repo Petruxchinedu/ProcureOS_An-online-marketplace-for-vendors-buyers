@@ -67,16 +67,24 @@ export const createRFQ = async (req: any, res: any) => {
 
 export const getVendorRFQs = async (req: any, res: any) => {
   try {
-    // We fetch RFQs where the vendorId matches the logged-in user's organization/ID
-    const vendorId = req.user.organizationId || req.user.userId;
+    // 1. Try to get ID from multiple possible locations in the token
+    const vendorId = req.user.organizationId || req.user.userId || req.user.id;
+
+    console.log("🔍 Fetching RFQs for Vendor ID:", vendorId);
+
+    if (!vendorId) {
+      return res.status(400).json({ message: "Vendor identity not found in token" });
+    }
 
     const rfqs = await RFQ.find({ vendorId })
-      .populate("productId", "name pricePerUnit images") // Get product details
-      .populate("buyerId", "name email")                 // Get buyer details
-      .sort({ createdAt: -1 });                          // Newest first
+      .populate("productId", "name pricePerUnit images")
+      .populate("buyerId", "name email organizationName") 
+      .sort({ createdAt: -1 });
 
+    console.log(`✅ Found ${rfqs.length} RFQs`);
     res.status(200).json(rfqs);
   } catch (error: any) {
+    console.error("❌ getVendorRFQs Error:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
