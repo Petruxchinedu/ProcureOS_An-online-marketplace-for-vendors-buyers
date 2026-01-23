@@ -24,8 +24,9 @@ router.use(requireAuth);
 /// ... existing imports
 
 // 1. Specific sub-paths FIRST
-router.get("/list/buyer", requireRole(UserRole.BUYER) as any, getBuyerRFQs);
-router.get("/list/vendor", requireRole(UserRole.VENDOR) as any, getVendorRFQs);
+// Change these lines to be very distinct
+router.get("/v/all", requireRole(UserRole.VENDOR) as any, getVendorRFQs);
+router.get("/b/all", requireRole(UserRole.BUYER) as any, getBuyerRFQs);
 
 // 2. Resource creation
 router.post("/", requireRole(UserRole.BUYER) as any, createRFQ as any);

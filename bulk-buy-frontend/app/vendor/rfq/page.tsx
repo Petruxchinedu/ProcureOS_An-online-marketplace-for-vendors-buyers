@@ -16,22 +16,15 @@ export default function VendorRFQInbox() {
   const [activeTab, setActiveTab] = useState("leads");
 
   // 1. Fetch Data with Fallback Logic
-  const { data: rfqs, isLoading } = useQuery({
-    queryKey: ["vendor-rfqs"],
-    queryFn: async () => {
-      // We use the most reliable endpoint discovered
-const res = await api.get("/rfq/list/vendor");
-      console.log("Terminal Raw Data:", res.data);
-      
-      // Senior Dev Note: Always handle variations in API response structures
-      const data = res.data;
-      if (Array.isArray(data)) return data;
-      if (data?.rfqs && Array.isArray(data.rfqs)) return data.rfqs;
-      if (data?.data && Array.isArray(data.data)) return data.data;
-      return [];
-    },
-    retry: 2
-  });
+const { data: rfqs, isLoading } = useQuery({
+  queryKey: ["vendor-rfqs"],
+  queryFn: async () => {
+    console.log("📡 Sending Request to: /rfq/v/all");
+    const res = await api.get("/rfq/v/all"); 
+    console.log("📥 Server Response:", res.status, res.data);
+    return Array.isArray(res.data) ? res.data : [];
+  }
+});
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/rfq/${id}`),
