@@ -145,16 +145,30 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/bulk-buy-frontend/node_modules/.pnpm/axios@1.13.2/node_modules/axios/lib/axios.js [app-ssr] (ecmascript)");
 ;
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].create({
-    baseURL: "http://localhost:5000/api",
+    // Use the Vercel URL in production, localhost in development
+    baseURL: ("TURBOPACK compile-time value", "https://procureos-an-online-marketplace-for.onrender.com") || "http://localhost:5000/api",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    // Essential for sending cookies if you use them for sessions
     withCredentials: true
 });
+// REQUEST INTERCEPTOR: This attaches the Token to every call
 api.interceptors.request.use((config)=>{
-    // Check LocalStorage first, then Cookies
-    const token = localStorage.getItem("token") || document.cookie.split('; ').find((row)=>row.startsWith('accessToken='))?.split('=')[1];
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+    ;
     return config;
+}, (error)=>{
+    return Promise.reject(error);
+});
+// RESPONSE INTERCEPTOR: This catches 401s (expired tokens) 
+api.interceptors.response.use((response)=>response, (error)=>{
+    if (error.response?.status === 401) {
+        console.warn("Unauthorized! Redirecting to login...");
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+    }
+    return Promise.reject(error);
 });
 }),
 "[project]/bulk-buy-frontend/lib/auth.ts [app-ssr] (ecmascript)", ((__turbopack_context__) => {
@@ -174,9 +188,7 @@ __turbopack_context__.s([
     "verifyEmail",
     ()=>verifyEmail
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/bulk-buy-frontend/node_modules/.pnpm/axios@1.13.2/node_modules/axios/lib/axios.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/bulk-buy-frontend/lib/api.ts [app-ssr] (ecmascript)"); // Remove the { } brackets
-;
 ;
 const registerUser = (data)=>__TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].post("/auth/register", data);
 const loginUser = (data)=>__TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].post("/auth/login", data);
@@ -185,10 +197,13 @@ const forgotPassword = (email)=>__TURBOPACK__imported__module__$5b$project$5d2f$
         email
     });
 const resetPassword = (data)=>__TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].post("/auth/reset-password", data);
-const API_BASE_URL = "http://localhost:5000/api"; // your backend port
-const getMe = ()=>{
-    return __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].get(`${API_BASE_URL}/auth/me`, {
-        withCredentials: true
+const API_BASE_URL = ("TURBOPACK compile-time value", "https://procureos-an-online-marketplace-for.onrender.com") || "http://localhost:5000/api";
+const getMe = async (token)=>{
+    const headers = token ? {
+        Authorization: `Bearer ${token}`
+    } : {};
+    return __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].get("/auth/me", {
+        headers
     });
 };
 }),
