@@ -14,8 +14,9 @@ router.use(requireAuth_js_1.requireAuth);
  */
 /// ... existing imports
 // 1. Specific sub-paths FIRST
-router.get("/list/buyer", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.getBuyerRFQs);
-router.get("/list/vendor", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.VENDOR), rfq_controller_js_1.getVendorRFQs);
+// Change these lines to be very distinct
+router.get("/v/all", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.VENDOR), rfq_controller_js_1.getVendorRFQs);
+router.get("/b/all", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.getBuyerRFQs);
 // 2. Resource creation
 router.post("/", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.createRFQ);
 // 3. The dynamic ID route LAST

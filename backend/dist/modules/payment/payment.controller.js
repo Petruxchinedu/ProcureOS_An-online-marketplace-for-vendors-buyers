@@ -34,8 +34,8 @@ const createCheckoutSession = async (req, res) => {
                     quantity: rfq.quantity,
                 }],
             mode: 'payment',
-            success_url: `${process.env.CLIENT_URL}/dashboard/buyer/payment-success?id=${rfq._id}`,
-            cancel_url: `${process.env.CLIENT_URL}/dashboard/buyer/rfq/list`,
+            success_url: `${process.env.FRONTEND_URL}/dashboard/buyer/payment-success?id=${rfq._id}`,
+            cancel_url: `${process.env.FRONTEND_URL}/dashboard/buyer/rfq/list`,
             metadata: {
                 rfqId: rfq._id.toString(),
                 buyerId: req.user.userId

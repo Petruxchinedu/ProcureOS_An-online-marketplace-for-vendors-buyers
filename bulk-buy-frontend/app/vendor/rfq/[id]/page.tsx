@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { 
   ArrowLeft, CheckCircle, XCircle, Package, User, 
   Loader2, DollarSign, MessageSquare, ShieldCheck, 
-  Zap, TrendingUp, RefreshCcw, Tag, box 
+  Zap, TrendingUp, RefreshCcw, Tag, Box 
 } from "lucide-react";
 import Link from "next/link";
 

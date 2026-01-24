@@ -28,11 +28,21 @@ const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY);
 exports.app = (0, express_1.default)();
 /* Global Middlewares */
 exports.app.use((0, cookie_parser_1.default)());
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://procure-os-an-online-marketplace-fo.vercel.app'
+];
 exports.app.use((0, cors_1.default)({
-    // 2. Dynamic Origin: Allows Localhost in dev and Vercel in production
-    origin: process.env.NODE_ENV === 'production'
-        ? [process.env.FRONTEND_URL]
-        : 'http://localhost:3000',
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

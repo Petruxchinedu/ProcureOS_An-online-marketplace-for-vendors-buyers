@@ -198,12 +198,6 @@
       "namedRegex": "^/vendor/rfq(?:/)?$"
     },
     {
-      "page": "/vendor/rfq/list",
-      "regex": "^/vendor/rfq/list(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/vendor/rfq/list(?:/)?$"
-    },
-    {
       "page": "/verify-email",
       "regex": "^/verify\\-email(?:/)?$",
       "routeKeys": {},

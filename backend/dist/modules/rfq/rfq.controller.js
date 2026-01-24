@@ -53,18 +53,27 @@ exports.createRFQ = createRFQ;
 /**
  * Vendor views incoming RFQs
  */
-// backend/src/modules/rfq/rfq.controller.ts
 const getVendorRFQs = async (req, res) => {
     try {
-        // We fetch RFQs where the vendorId matches the logged-in user's organization/ID
-        const vendorId = req.user.organizationId || req.user.userId;
-        const rfqs = await rfq_model_js_1.default.find({ vendorId })
-            .populate("productId", "name pricePerUnit images") // Get product details
-            .populate("buyerId", "name email") // Get buyer details
-            .sort({ createdAt: -1 }); // Newest first
+        // 1. Get all possible IDs the user might be identified by
+        const userId = req.user.userId;
+        const orgId = req.user.organizationId;
+        console.log(`🔍 DEBUG: Fetching for User: ${userId} or Org: ${orgId}`);
+        // 2. Search for RFQs where vendorId matches EITHER the User or their Org
+        const rfqs = await rfq_model_js_1.default.find({
+            $or: [
+                { vendorId: userId },
+                { vendorId: orgId }
+            ]
+        })
+            .populate("productId", "name pricePerUnit images category stock")
+            .populate("buyerId", "name email organizationName")
+            .sort({ createdAt: -1 });
+        console.log(`✅ Found ${rfqs.length} RFQs for this vendor terminal.`);
         res.status(200).json(rfqs);
     }
     catch (error) {
+        console.error("❌ getVendorRFQs Error:", error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -112,20 +121,17 @@ exports.getRFQById = getRFQById;
 const updateRFQStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body; // Expecting "ACCEPTED" or "REJECTED"
-        // 1. Find the RFQ and update it
-        const rfq = await rfq_model_js_1.default.findByIdAndUpdate(id, { status: status }, { new: true }).populate("productId buyerId");
-        if (!rfq) {
-            return res.status(404).json({ message: "RFQ not found" });
+        const { status, vendorCounterPrice } = req.body;
+        const updateData = { status };
+        if (vendorCounterPrice) {
+            updateData.targetUnitPrice = vendorCounterPrice; // Update the price if countering
         }
-        console.log(`✅ RFQ ${id} marked as ${status}`);
-        res.status(200).json({
-            message: `Request ${status.toLowerCase()} successfully`,
-            rfq
-        });
+        const rfq = await rfq_model_js_1.default.findByIdAndUpdate(id, updateData, { new: true }).populate("productId buyerId");
+        if (!rfq)
+            return res.status(404).json({ message: "RFQ not found" });
+        res.status(200).json({ message: "Terminal Updated", rfq });
     }
     catch (error) {
-        console.error("❌ RFQ Status Update Error:", error);
         res.status(500).json({ message: error.message });
     }
 };
