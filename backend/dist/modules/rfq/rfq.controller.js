@@ -13,40 +13,31 @@ const product_model_js_1 = __importDefault(require("../products/product.model.js
 const createRFQ = async (req, res) => {
     try {
         const { productId, quantity, targetUnitPrice, message } = req.body;
-        const buyerId = req.user.userId; // Extracted from verified JWT
-        // 1. Find the product to get the Vendor's ID
+        const buyerId = req.user.userId;
+        // 1. Find the product and the VENDOR who owns it
         const product = await product_model_js_1.default.findById(productId);
-        if (!product) {
+        if (!product)
             return res.status(404).json({ message: "Product not found" });
-        }
-        // 2. Identify the Vendor
-        // IMPORTANT: Make sure your Product model uses 'vendorOrganizationId' or 'vendorId'
-        const vendorId = product.vendorOrganizationId || product.vendorId;
+        // 2. CRITICAL: Identify the correct Vendor ID from the product
+        // Check all possible field names you might have used in your Product model
+        const vendorId = product.vendorId || product.vendorOrganizationId || product.owner;
         if (!vendorId) {
-            return res.status(400).json({
-                message: "This product does not have an assigned vendor."
-            });
+            return res.status(400).json({ message: "Product has no owner (Vendor ID missing)" });
         }
-        // 3. Create the RFQ with the required vendorId
+        // 3. Create the RFQ
         const newRFQ = await rfq_model_js_1.default.create({
             productId,
             buyerId,
-            vendorId, // 👈 This fixes the "Path vendorId is required" error
+            vendorId, // This links it to the Vendor's Lead Box
             quantity: Number(quantity),
-            targetUnitPrice: targetUnitPrice ? Number(targetUnitPrice) : product.pricePerUnit,
+            targetUnitPrice: targetUnitPrice || product.pricePerUnit,
             message,
             status: "PENDING"
         });
-        console.log("✅ RFQ Created Successfully for Vendor:", vendorId);
-        return res.status(201).json({
-            success: true,
-            message: "Request sent to vendor!",
-            data: newRFQ
-        });
+        res.status(201).json({ success: true, data: newRFQ });
     }
     catch (error) {
-        console.error("❌ RFQ Controller Error:", error.message);
-        return res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 };
 exports.createRFQ = createRFQ;
