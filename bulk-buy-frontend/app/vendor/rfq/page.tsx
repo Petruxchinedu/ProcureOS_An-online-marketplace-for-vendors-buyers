@@ -18,12 +18,12 @@ export default function VendorRFQInbox() {
   // 1. Fetch Data with Fallback Logic
 const { data: rfqs, isLoading } = useQuery({
   queryKey: ["vendor-rfqs"],
-  queryFn: async () => {
-    console.log("📡 Sending Request to: /rfq/v/all");
-    const res = await api.get("/rfq/v/all"); 
-    console.log("📥 Server Response:", res.status, res.data);
-    return Array.isArray(res.data) ? res.data : [];
-  }
+ queryFn: async () => {
+  const res = await api.get("/rfq/v/all");
+  console.log("RAW RESPONSE:", res.data);
+  return res.data;
+}
+
 });
 
   const deleteMutation = useMutation({
