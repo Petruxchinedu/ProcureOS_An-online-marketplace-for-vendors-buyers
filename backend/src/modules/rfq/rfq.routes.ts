@@ -21,12 +21,12 @@ router.use(protect);
  * These must be defined BEFORE dynamic routes like /:id
  */
 
-/// ... existing imports
-
 // Vendor-specific endpoints
+router.get("/vendor", requireRole(UserRole.VENDOR), getVendorRFQs);
 router.get("/v/all", requireRole(UserRole.VENDOR), getVendorRFQs);
 
 // Buyer-specific endpoints
+router.get("/buyer", requireRole(UserRole.BUYER), getBuyerRFQs);
 router.get("/b/all", requireRole(UserRole.BUYER), getBuyerRFQs);
 router.post("/", requireRole(UserRole.BUYER), createRFQ);
 // 3. The dynamic ID route LAST
