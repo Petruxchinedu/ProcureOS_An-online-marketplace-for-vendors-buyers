@@ -88,3 +88,36 @@ export const markOrderFulfilled = async (req: Request, res: Response) => {
 
   return res.status(200).json(order);
 };
+import { Order } from "./order.model";
+
+export const getInvoice = async (req: any, res: any) => {
+  try {
+    const vendorId = req.user.userId;
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({ _id: orderId, vendorId })
+      .populate("buyerId", "name email")
+      .populate("vendorId", "name email")
+      .populate("productId", "name");
+
+    if (!order) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+
+    const invoice = {
+      invoiceNumber: `INV-${order._id.toString().slice(-6).toUpperCase()}`,
+      issuedAt: new Date(),
+      vendor: order.vendorId,
+      buyer: order.buyerId,
+      product: order.productId,
+      quantity: order.quantity,
+      unitPrice: order.unitPrice,
+      total: order.totalAmount,
+      status: order.status
+    };
+
+    res.status(200).json(invoice);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -37,6 +37,9 @@ const RFQSchema: Schema = new Schema(
     targetUnitPrice: { 
       type: Number 
     },
+    vendorCounterPrice: {
+  type: Number
+},
     message: { 
       type: String, 
       required: [true, "Please provide details for your request"],

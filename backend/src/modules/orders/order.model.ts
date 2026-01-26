@@ -1,5 +1,12 @@
 import { Schema, model, Types } from "mongoose";
-import { OrderStatus } from "./order.types.js";
+
+export enum OrderStatus {
+  PENDING_PAYMENT = "PENDING_PAYMENT",
+  PAID = "PAID",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED"
+}
 
 const OrderSchema = new Schema(
   {
@@ -7,16 +14,25 @@ const OrderSchema = new Schema(
       type: Types.ObjectId,
       ref: "RFQ",
       required: true,
-      index: true,
+      unique: true // 🔒 prevents duplicate orders
     },
-
+    buyerId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    vendorId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true
+    },
     productId: {
       type: Types.ObjectId,
       ref: "Product",
-      required: true,
+      required: true
     },
-
-    buyerOrganizationId: {
+    
+ buyerOrganizationId: {
       type: Types.ObjectId,
       ref: "Organization",
       required: true,
@@ -29,40 +45,30 @@ const OrderSchema = new Schema(
       required: true,
       index: true,
     },
-
     quantity: {
       type: Number,
-      required: true,
+      required: true
     },
-
     unitPrice: {
       type: Number,
-      required: true,
+      required: true
     },
-
     totalAmount: {
       type: Number,
-      required: true,
+      required: true
     },
-
     status: {
       type: String,
       enum: Object.values(OrderStatus),
-      default: OrderStatus.CREATED,
+      default: OrderStatus.PENDING_PAYMENT
     },
-
-    escrowId: {
-      type: Types.ObjectId,
-      ref: "Escrow",
-    },
-
-    createdBy: {
-      type: Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    delivery: {
+      carrier: String,
+      trackingNumber: String,
+      estimatedDelivery: Date
+    }
   },
   { timestamps: true }
 );
 
-export const OrderModel = model("Order", OrderSchema);
+export const Order = model("Order", OrderSchema);

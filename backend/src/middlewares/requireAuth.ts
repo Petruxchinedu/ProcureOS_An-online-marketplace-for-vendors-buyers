@@ -1,29 +1,36 @@
+// backend/src/middlewares/requireAuth.ts
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+export interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+    organizationId?: string;
+    role: string;
+  };
+}
 
-  // DEBUG: See what the backend is actually receiving
-  console.log("🛡️ AUTH ATTEMPT - Header:", authHeader);
+export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Bearer TOKEN
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log("❌ AUTH FAILED: No Bearer token in header");
-    return res.status(401).json({ message: "Unauthorized: Missing Token" });
-  }
-
-  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Authentication required" });
 
   try {
-    // IMPORTANT: Ensure process.env.JWT_SECRET is exactly the same 
-    // string used in your login/register controller!
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    
-    (req as any).user = decoded;
-    console.log("✅ AUTH SUCCESS: User verified");
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+    // ⚡ Validate payload structure
+    if (!payload.userId || !payload.role) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
+    req.user = {
+      userId: payload.userId,
+      organizationId: payload.organizationId,
+      role: payload.role,
+    };
+
     next();
-  } catch (err: any) {
-    console.error("❌ AUTH FAILED: JWT Error ->", err.message);
-    return res.status(401).json({ message: "Unauthorized: Invalid Token" });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

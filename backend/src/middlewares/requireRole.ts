@@ -1,15 +1,11 @@
-// Open src/middlewares/requireRole.ts
+// backend/src/middlewares/requireRole.ts
 import { Response, NextFunction } from "express";
-import { AuthRequest, UserRole } from "../auth/auth.middleware.js";
+import { AuthRequest } from "./requireAuth";
 
-export const requireRole = (...roles: UserRole[]) => {
+export const requireRole = (role: string) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    // Add "as any" or "as UserRole" to the role check to satisfy the compiler
-    if (!req.user || !roles.includes(req.user.role as any)) {
-      return res.status(403).json({ 
-        message: "Forbidden: You do not have the required permissions" 
-      });
-    }
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    if (req.user.role !== role) return res.status(403).json({ message: "Forbidden: Insufficient role" });
     next();
   };
 };

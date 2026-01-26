@@ -22,5 +22,11 @@ router.post(
   requireRole(UserRole.VENDOR) as any,
   markOrderFulfilled
 );
+router.get(
+  "/orders/:orderId/invoice",
+  protect,
+  requireRole(UserRole.VENDOR),
+  getInvoice
+);
 
 export default router;

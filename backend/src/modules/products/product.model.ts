@@ -8,6 +8,11 @@ const ProductSchema: Schema = new Schema({
   minimumOrderQuantity: { type: Number, required: true },
   images: [{ type: String }],
   category: { type: String },
+  vendorId: {
+  type: Schema.Types.ObjectId,
+  ref: "User",
+  required: true
+},
   vendorOrganizationId: { type: Schema.Types.ObjectId, ref: "Organization" }
 }, { timestamps: true });
 
