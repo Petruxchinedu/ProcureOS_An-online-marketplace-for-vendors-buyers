@@ -75,11 +75,7 @@ export const getVendorRFQs = async (req: any, res: any) => {
 
     const rfqs = await RFQ.find({ vendorId })
       .populate("productId", "name pricePerUnit images category stock")
-      .populate({
-        path: "buyerId",
-        select: "email organizationId",
-        populate: { path: "organizationId", select: "name" }
-      })
+      .populate("buyerId", "name email organizationName")
       .sort({ createdAt: -1 });
 
     console.log(`✅ Found ${rfqs.length} RFQs for vendor terminal`);
@@ -108,11 +104,7 @@ export const getBuyerRFQs = async (req: any, res: Response) => {
 
     const rfqs = await RFQ.find({ buyerId: buyerId })
       .populate("productId", "name category price images pricePerUnit") 
-      .populate({
-        path: "vendorId",
-        select: "email organizationId",
-        populate: { path: "organizationId", select: "name" }
-      })
+      .populate("vendorId", "organizationName email")
       .sort({ createdAt: -1 });
 
     res.status(200).json(rfqs);
