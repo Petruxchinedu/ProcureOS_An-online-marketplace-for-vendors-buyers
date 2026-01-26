@@ -1,74 +1,38 @@
-import { Schema, model, Types } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-export enum OrderStatus {
-  PENDING_PAYMENT = "PENDING_PAYMENT",
-  PAID = "PAID",
-  SHIPPED = "SHIPPED",
-  DELIVERED = "DELIVERED",
-  CANCELLED = "CANCELLED"
+export interface IOrder extends Document {
+  rfqId: Types.ObjectId;
+  productId: Types.ObjectId;
+  buyerId: string;
+  vendorId: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  status: "CREATED" | "CONFIRMED" | "PAID" | "FULFILLED";
+  buyerOrganizationId?: string;
+  vendorOrganizationId?: string;
+  escrowId?: Types.ObjectId;
+  createdBy?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const OrderSchema = new Schema(
+const orderSchema = new Schema<IOrder>(
   {
-    rfqId: {
-      type: Types.ObjectId,
-      ref: "RFQ",
-      required: true,
-      unique: true // 🔒 prevents duplicate orders
-    },
-    buyerId: {
-      type: Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    vendorId: {
-      type: Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    productId: {
-      type: Types.ObjectId,
-      ref: "Product",
-      required: true
-    },
-    
- buyerOrganizationId: {
-      type: Types.ObjectId,
-      ref: "Organization",
-      required: true,
-      index: true,
-    },
-
-    vendorOrganizationId: {
-      type: Types.ObjectId,
-      ref: "Organization",
-      required: true,
-      index: true,
-    },
-    quantity: {
-      type: Number,
-      required: true
-    },
-    unitPrice: {
-      type: Number,
-      required: true
-    },
-    totalAmount: {
-      type: Number,
-      required: true
-    },
-    status: {
-      type: String,
-      enum: Object.values(OrderStatus),
-      default: OrderStatus.PENDING_PAYMENT
-    },
-    delivery: {
-      carrier: String,
-      trackingNumber: String,
-      estimatedDelivery: Date
-    }
+    rfqId: { type: Schema.Types.ObjectId, ref: "RFQ", required: true },
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    buyerId: { type: String, required: true },
+    vendorId: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    unitPrice: { type: Number, required: true },
+    totalAmount: { type: Number, required: true },
+    status: { type: String, enum: ["CREATED","CONFIRMED","PAID","FULFILLED"], default: "CREATED" },
+    buyerOrganizationId: { type: String },
+    vendorOrganizationId: { type: String },
+    escrowId: { type: Schema.Types.ObjectId, ref: "Escrow" },
+    createdBy: { type: String },
   },
   { timestamps: true }
 );
 
-export const Order = model("Order", OrderSchema);
+export const OrderModel = mongoose.model<IOrder>("Order", orderSchema);

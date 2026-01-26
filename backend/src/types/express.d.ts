@@ -1,11 +1,13 @@
 import "express";
 
+export type UserRole = "BUYER" | "VENDOR" | "ADMIN";
+
 declare global {
   namespace Express {
     interface User {
       userId: string;
-      role: "BUYER" | "VENDOR" | "ADMIN";
-      organizationId: string;
+      role: UserRole;
+      organizationId?: string;
     }
 
     interface Request {

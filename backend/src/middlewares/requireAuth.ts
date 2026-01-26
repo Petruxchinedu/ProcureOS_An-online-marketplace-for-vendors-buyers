@@ -1,36 +1,35 @@
-// backend/src/middlewares/requireAuth.ts
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export interface AuthRequest extends Request {
-  user?: {
-    userId: string;
-    organizationId?: string;
-    role: string;
-  };
-}
+export const protect = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
 
-export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Bearer TOKEN
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
 
-  if (!token) return res.status(401).json({ message: "Authentication required" });
+  const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+      role: "BUYER" | "VENDOR" | "ADMIN";
+      organizationId?: string;
+    };
 
-    // ⚡ Validate payload structure
-    if (!payload.userId || !payload.role) {
+    if (!decoded.userId || !decoded.role) {
       return res.status(401).json({ message: "Invalid token payload" });
     }
 
+    // ✅ Attach user to req using your express.d.ts augmentation
     req.user = {
-      userId: payload.userId,
-      organizationId: payload.organizationId,
-      role: payload.role,
+      userId: decoded.userId,
+      role: decoded.role,
+      organizationId: decoded.organizationId,
     };
 
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

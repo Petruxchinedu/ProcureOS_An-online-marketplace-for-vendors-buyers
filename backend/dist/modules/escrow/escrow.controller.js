@@ -16,7 +16,7 @@ const confirmDeliveryAndReleaseEscrow = async (req, res) => {
     const order = await order_model_js_1.OrderModel.findById(orderId);
     if (!order)
         return res.status(404).json({ message: "Order not found" });
-    if (order.buyerOrganizationId.toString() !== req.user.organizationId) {
+    if (order.buyerOrganizationId?.toString() !== req.user.organizationId) {
         return res.status(403).json({ message: "Access denied" });
     }
     if (order.status !== order_types_js_1.OrderStatus.FULFILLED) {
@@ -34,7 +34,7 @@ const confirmDeliveryAndReleaseEscrow = async (req, res) => {
      * STATE TRANSITIONS (Atomic)
      */
     escrow.status = escrow_types_js_1.EscrowStatus.RELEASED;
-    order.status = order_types_js_1.OrderStatus.COMPLETED;
+    order.status = "FULFILLED";
     await escrow.save();
     await order.save();
     const vendorUser = await user_model_1.UserModel.findOne({

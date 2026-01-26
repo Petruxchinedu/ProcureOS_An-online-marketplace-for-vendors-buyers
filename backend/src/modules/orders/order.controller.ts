@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import  RFQModel  from "../rfq/rfq.model.js";
 import { OrderModel } from "./order.model.js";
+import RFQModel from "../rfq/rfq.model.js";
 import { EscrowModel } from "../escrow/escrow.model.js";
 import { RFQStatus } from "../rfq/rfq.types.js";
 import { OrderStatus } from "./order.types.js";
@@ -15,10 +15,14 @@ export const createOrderFromRFQ = async (req: Request, res: Response) => {
   const { rfqId } = req.params;
   const { unitPrice } = req.body;
 
+  if (!req.user?.organizationId) {
+    return res.status(403).json({ message: "Organization context required" });
+  }
+
   const rfq = await RFQModel.findById(rfqId);
   if (!rfq) return res.status(404).json({ message: "RFQ not found" });
 
-  if (rfq.buyerOrganizationId.toString() !== req.user!.organizationId) {
+  if (rfq.buyerOrganizationId.toString() !== req.user.organizationId) {
     return res.status(403).json({ message: "Access denied" });
   }
 
@@ -37,7 +41,7 @@ export const createOrderFromRFQ = async (req: Request, res: Response) => {
     unitPrice,
     totalAmount,
     status: OrderStatus.CREATED,
-    createdBy: req.user!.userId,
+    createdBy: req.user.userId,
   });
 
   const escrow = await EscrowModel.create({
@@ -61,10 +65,14 @@ export const createOrderFromRFQ = async (req: Request, res: Response) => {
 export const markOrderFulfilled = async (req: Request, res: Response) => {
   const { orderId } = req.params;
 
+  if (!req.user?.organizationId) {
+    return res.status(403).json({ message: "Organization context required" });
+  }
+
   const order = await OrderModel.findById(orderId);
   if (!order) return res.status(404).json({ message: "Order not found" });
 
-  if (order.vendorOrganizationId.toString() !== req.user!.organizationId) {
+  if (order.vendorOrganizationId !== req.user.organizationId) {
     return res.status(403).json({ message: "Access denied" });
   }
 
@@ -88,14 +96,17 @@ export const markOrderFulfilled = async (req: Request, res: Response) => {
 
   return res.status(200).json(order);
 };
-import { Order } from "./order.model";
 
-export const getInvoice = async (req: any, res: any) => {
+/**
+ * Get invoice for order
+ */
+export const getInvoice = async (req: Request, res: Response) => {
   try {
-    const vendorId = req.user.userId;
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
     const { orderId } = req.params;
 
-    const order = await Order.findOne({ _id: orderId, vendorId })
+    const order = await OrderModel.findById(orderId)
       .populate("buyerId", "name email")
       .populate("vendorId", "name email")
       .populate("productId", "name");
@@ -113,11 +124,11 @@ export const getInvoice = async (req: any, res: any) => {
       quantity: order.quantity,
       unitPrice: order.unitPrice,
       total: order.totalAmount,
-      status: order.status
+      status: order.status,
     };
 
-    res.status(200).json(invoice);
+    return res.status(200).json(invoice);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };

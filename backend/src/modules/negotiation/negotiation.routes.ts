@@ -3,11 +3,11 @@ import {
   sendNegotiationMessage,
   getNegotiationThread,
 } from "./negotiation.controller.js";
-import { requireAuth } from "../../middlewares/requireAuth.js";
+import { protect } from "../../middlewares/requireAuth.js";
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(protect);
 
 router.post("/:rfqId/messages", sendNegotiationMessage);
 router.get("/:rfqId/messages", getNegotiationThread);

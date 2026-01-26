@@ -2,31 +2,14 @@ import { Router } from "express";
 import {
   createOrderFromRFQ,
   markOrderFulfilled,
+  getInvoice,
 } from "./order.controller.js";
-import { requireAuth } from "../../middlewares/requireAuth.js";
-import { requireRole } from "../../middlewares/requireRole.js";
-import { UserRole } from "../users/user.types.js";
+import { protect } from "../../middlewares/requireAuth.js";
 
 const router = Router();
 
-router.post(
-  "/rfq/:rfqId",
-  requireAuth,
-  requireRole(UserRole.BUYER) as any,
-  createOrderFromRFQ
-);
-
-router.post(
-  "/:orderId/fulfill",
-  requireAuth,
-  requireRole(UserRole.VENDOR) as any,
-  markOrderFulfilled
-);
-router.get(
-  "/orders/:orderId/invoice",
-  protect,
-  requireRole(UserRole.VENDOR),
-  getInvoice
-);
+router.post("/rfq/:rfqId/accept", protect, createOrderFromRFQ);
+router.patch("/:orderId/fulfill", protect, markOrderFulfilled);
+router.get("/:orderId/invoice", protect, getInvoice);
 
 export default router;

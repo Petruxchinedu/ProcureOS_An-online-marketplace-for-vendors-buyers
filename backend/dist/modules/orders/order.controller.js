@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.markOrderFulfilled = exports.createOrderFromRFQ = void 0;
-const rfq_model_js_1 = __importDefault(require("../rfq/rfq.model.js"));
+exports.getInvoice = exports.markOrderFulfilled = exports.createOrderFromRFQ = void 0;
 const order_model_js_1 = require("./order.model.js");
+const rfq_model_js_1 = __importDefault(require("../rfq/rfq.model.js"));
 const escrow_model_js_1 = require("../escrow/escrow.model.js");
 const rfq_types_js_1 = require("../rfq/rfq.types.js");
 const order_types_js_1 = require("./order.types.js");
@@ -18,6 +18,9 @@ const notification_types_js_1 = require("../notification/notification.types.js")
 const createOrderFromRFQ = async (req, res) => {
     const { rfqId } = req.params;
     const { unitPrice } = req.body;
+    if (!req.user?.organizationId) {
+        return res.status(403).json({ message: "Organization context required" });
+    }
     const rfq = await rfq_model_js_1.default.findById(rfqId);
     if (!rfq)
         return res.status(404).json({ message: "RFQ not found" });
@@ -56,10 +59,13 @@ exports.createOrderFromRFQ = createOrderFromRFQ;
  */
 const markOrderFulfilled = async (req, res) => {
     const { orderId } = req.params;
+    if (!req.user?.organizationId) {
+        return res.status(403).json({ message: "Organization context required" });
+    }
     const order = await order_model_js_1.OrderModel.findById(orderId);
     if (!order)
         return res.status(404).json({ message: "Order not found" });
-    if (order.vendorOrganizationId.toString() !== req.user.organizationId) {
+    if (order.vendorOrganizationId !== req.user.organizationId) {
         return res.status(403).json({ message: "Access denied" });
     }
     order.status = order_types_js_1.OrderStatus.FULFILLED;
@@ -80,3 +86,36 @@ const markOrderFulfilled = async (req, res) => {
     return res.status(200).json(order);
 };
 exports.markOrderFulfilled = markOrderFulfilled;
+/**
+ * Get invoice for order
+ */
+const getInvoice = async (req, res) => {
+    try {
+        if (!req.user)
+            return res.status(401).json({ message: "Unauthorized" });
+        const { orderId } = req.params;
+        const order = await order_model_js_1.OrderModel.findById(orderId)
+            .populate("buyerId", "name email")
+            .populate("vendorId", "name email")
+            .populate("productId", "name");
+        if (!order) {
+            return res.status(404).json({ message: "Invoice not found" });
+        }
+        const invoice = {
+            invoiceNumber: `INV-${order._id.toString().slice(-6).toUpperCase()}`,
+            issuedAt: new Date(),
+            vendor: order.vendorId,
+            buyer: order.buyerId,
+            product: order.productId,
+            quantity: order.quantity,
+            unitPrice: order.unitPrice,
+            total: order.totalAmount,
+            status: order.status,
+        };
+        return res.status(200).json(invoice);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+exports.getInvoice = getInvoice;

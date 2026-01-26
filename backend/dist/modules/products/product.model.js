@@ -42,6 +42,11 @@ const ProductSchema = new mongoose_1.Schema({
     minimumOrderQuantity: { type: Number, required: true },
     images: [{ type: String }],
     category: { type: String },
+    vendorId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     vendorOrganizationId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Organization" }
 }, { timestamps: true });
 // Check this line carefully:

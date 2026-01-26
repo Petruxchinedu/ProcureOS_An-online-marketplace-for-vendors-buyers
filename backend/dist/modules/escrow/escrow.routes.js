@@ -6,5 +6,5 @@ const requireAuth_js_1 = require("../../middlewares/requireAuth.js");
 const requireRole_js_1 = require("../../middlewares/requireRole.js");
 const user_types_js_1 = require("../users/user.types.js");
 const router = (0, express_1.Router)();
-router.post("/orders/:orderId/confirm", requireAuth_js_1.requireAuth, (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), escrow_controller_js_1.confirmDeliveryAndReleaseEscrow);
+router.post("/orders/:orderId/confirm", requireAuth_js_1.protect, (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), escrow_controller_js_1.confirmDeliveryAndReleaseEscrow);
 exports.default = router;

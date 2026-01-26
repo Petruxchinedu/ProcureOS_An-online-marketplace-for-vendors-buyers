@@ -7,14 +7,14 @@ import {
   updateRFQStatus, 
   respondToRFQ 
 } from "./rfq.controller.js";
-import { requireAuth } from "../../middlewares/requireAuth.js";
+import { protect } from "../../middlewares/requireAuth.js";
 import { requireRole } from "../../middlewares/requireRole.js";
 import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 
 // Apply requireAuth to all RFQ routes since they all require a session
-router.use(requireAuth);
+router.use(protect);
 
 /**
  * 1. STATIC/NAMED ROUTES (Specific)

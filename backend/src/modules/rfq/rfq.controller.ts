@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 // Consolidate imports: Using both the named model and the default if necessary
 import RFQ from "./rfq.model.js"; 
 import Product from "../products/product.model.js"; 
-
+import { OrderModel } from "../orders/order.model.js";
 import { RFQStatus } from "./rfq.types.js";
 import { createNotification } from "../notification/notification.service.js";
 import { NotificationType } from "../notification/notification.types.js";
@@ -189,10 +189,10 @@ export const respondToRFQ = async (req: any, res: any) => {
 
     // 🔐 CREATE ORDER ONLY ON ACCEPT
     if (status === "ACCEPTED") {
-      const existingOrder = await Order.findOne({ rfqId: rfq._id });
+      const existingOrder = await OrderModel.findOne({ rfqId: rfq._id });
 
       if (!existingOrder) {
-        await Order.create({
+        await OrderModel.create({
           rfqId: rfq._id,
           buyerId: rfq.buyerId,
           vendorId: rfq.vendorId,
