@@ -22,7 +22,7 @@ export default function EliteBuyerDashboard() {
   const { data: rfqs, isLoading: rfqsLoading } = useQuery({
     queryKey: ["buyer-rfqs-dashboard"],
     queryFn: async () => {
-      const res = await api.get("/rfq/buyer");
+      const res = await api.get("/rfq/b/all");
       return Array.isArray(res.data) ? res.data : [];
     }
   });

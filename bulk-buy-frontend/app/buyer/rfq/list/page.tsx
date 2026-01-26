@@ -20,7 +20,7 @@ export default function BuyerRFQDashboard() {
   const { data: rfqs, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["buyer-rfqs"],
     queryFn: async () => {
-      const res = await api.get("/rfq/list/buyer");
+      const res = await api.get("/rfq/b/all");
       return Array.isArray(res.data) ? res.data : [];
     },
     retry: 1,
@@ -113,7 +113,7 @@ export default function BuyerRFQDashboard() {
                       </div>
                     </td>
                     <td className="px-10 py-8">
-                      <p className="text-sm font-bold text-slate-300 uppercase tracking-tight">{rfq.vendorId?.organizationName || "Awaiting Vendor"}</p>
+                      <p className="text-sm font-bold text-slate-300 uppercase tracking-tight">{rfq.vendorId?.organizationId?.name || "Awaiting Vendor"}</p>
                     </td>
                     <td className="px-10 py-8">
                       <p className="text-lg font-black text-white tabular-nums">

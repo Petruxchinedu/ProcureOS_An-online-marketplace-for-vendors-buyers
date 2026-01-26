@@ -144,7 +144,7 @@ const { data: rfqs, isLoading } = useQuery({
                         {rfq.productId?.name || "Premium Asset"}
                       </h3>
                       <p className="text-sm text-slate-500 font-bold uppercase tracking-widest flex items-center gap-2">
-                        Client: <span className="text-slate-200">{rfq.buyerId?.organizationName || rfq.buyerId?.name || "Corporate"}</span>
+                        Client: <span className="text-slate-200">{rfq.buyerId?.organizationId?.name || rfq.buyerId?.email || "Corporate"}</span>
                       </p>
                     </div>
 
