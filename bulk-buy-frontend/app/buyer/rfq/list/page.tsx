@@ -20,7 +20,7 @@ export default function BuyerRFQDashboard() {
   const { data: rfqs, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["buyer-rfqs"],
     queryFn: async () => {
-      const res = await api.get("/rfq/list/buyer");
+      const res = await api.get("/rfq/buyer");
       return Array.isArray(res.data) ? res.data : [];
     },
     retry: 1,
