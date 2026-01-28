@@ -43,35 +43,32 @@ export default function VendorRFQInbox() {
   }, []);
 
   // Fetch RFQs
-  const { data: rfqs, isLoading, error, isError } = useQuery({
-    queryKey: ["vendor-rfqs"],
-    queryFn: async () => {
-      console.log("📡 Fetching vendor RFQs...");
-      try {
-        const res = await api.get("/rfq/vendor");
-        console.log("✅ API Response Status:", res.status);
-        console.log("✅ API Response Data:", res.data);
-        
-        if (!res.data) {
-          console.warn("⚠️  Response has no data");
-          return [];
-        }
-        
-        if (!Array.isArray(res.data)) {
-          console.warn("⚠️  Response is not an array:", typeof res.data);
-          return [];
-        }
-        
-        console.log(`✅ Received ${res.data.length} RFQs`);
-        return res.data;
-      } catch (err: any) {
-        console.error("❌ API Error:", err.response?.data || err.message);
-        throw err;
+const { data: rfqs, isLoading, error, isError } = useQuery({
+  queryKey: ["vendor-rfqs"],
+  queryFn: async () => {
+    console.log("📡 Fetching vendor RFQs from /rfq/vendor...");
+    try {
+      // ✅ This will call: http://localhost:5000/api/rfq/vendor
+      const res = await api.get("/rfq/vendor");
+      console.log("✅ Response Status:", res.status);
+      console.log("✅ Response Data:", res.data);
+      
+      if (!res.data) {
+        console.warn("⚠️  Empty response");
+        return [];
       }
-    },
-    retry: 1,
-    staleTime: 30000 // Cache for 30 seconds
-  });
+      
+      return Array.isArray(res.data) ? res.data : [];
+    } catch (err: any) {
+      console.error("❌ API Error Details:");
+      console.error("  Status:", err.response?.status);
+      console.error("  Message:", err.response?.data?.message || err.message);
+      console.error("  URL:", err.config?.url);
+      throw err;
+    }
+  },
+  retry: 1,
+});
 
   // Delete mutation
   const deleteMutation = useMutation({

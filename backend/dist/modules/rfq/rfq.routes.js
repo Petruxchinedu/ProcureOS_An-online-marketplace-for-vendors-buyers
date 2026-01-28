@@ -12,10 +12,11 @@ router.use(requireAuth_js_1.protect);
  * 1. STATIC/NAMED ROUTES (Specific)
  * These must be defined BEFORE dynamic routes like /:id
  */
-/// ... existing imports
 // Vendor-specific endpoints
+router.get("/vendor", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.VENDOR), rfq_controller_js_1.getVendorRFQs);
 router.get("/v/all", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.VENDOR), rfq_controller_js_1.getVendorRFQs);
 // Buyer-specific endpoints
+router.get("/buyer", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.getBuyerRFQs);
 router.get("/b/all", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.getBuyerRFQs);
 router.post("/", (0, requireRole_js_1.requireRole)(user_types_js_1.UserRole.BUYER), rfq_controller_js_1.createRFQ);
 // 3. The dynamic ID route LAST

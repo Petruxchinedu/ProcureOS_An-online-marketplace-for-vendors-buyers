@@ -1,75 +1,89 @@
-import mongoose from "mongoose";
-import RFQ from "../modules/rfq/rfq.model.js";
-import Product from "../modules/products/product.model.js";
-import { UserModel } from "../modules/users/user.model.js";
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const path = require("path");
 
-// Fix dotenv path for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Load .env from backend root
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const seedTestData = async () => {
   try {
-    // Check if MONGO_URI exists
-    if (!process.env.MONGO_URI) {
-      console.error("❌ MONGO_URI not found in environment variables!");
-      console.log("Available env vars:", Object.keys(process.env).filter(k => k.includes('MONGO')));
+    console.log("🔍 Environment Check:");
+    console.log("MONGODB_URI exists:", !!process.env.MONGODB_URI);
+
+    if (!process.env.MONGODB_URI) {
+      console.error("❌ MONGODB_URI is not defined in .env file!");
       process.exit(1);
     }
 
-    // Connect to MongoDB
+    // Connect
     console.log("🔗 Connecting to MongoDB...");
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connected to MongoDB");
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("✅ Connected to MongoDB\n");
 
-    // ... rest of the script stays the same
+    // Import models dynamically
+    const { default: RFQ } = await import("../modules/rfq/rfq.model.js");
+    const { default: Product } = await import("../modules/products/product.model.js");
+    const { UserModel } = await import("../modules/users/user.model.js");
 
-    // 1. Find a vendor user
+    // 1. Find vendor
+    console.log("1️⃣ Looking for vendor user...");
     const vendor = await UserModel.findOne({ role: "VENDOR" });
     if (!vendor) {
-      console.error("❌ No vendor found! Create a vendor user first.");
+      console.error("❌ No vendor found! Please create a vendor user first.");
+      console.log("\n💡 To create a vendor, use your registration endpoint or MongoDB Compass");
       process.exit(1);
     }
-    console.log("✅ Found Vendor:", vendor._id, "-", vendor.email);
+    console.log("✅ Found Vendor:");
+    console.log("   ID:", vendor._id.toString());
+    console.log("   Email:", vendor.email);
 
-    // 2. Find or create a product for this vendor
+    // 2. Find or create product
+    console.log("\n2️⃣ Looking for vendor's products...");
     let product = await Product.findOne({ vendorId: vendor._id });
     
     if (!product) {
-      console.log("📦 Creating test product...");
+      console.log("📦 No products found. Creating test product...");
       product = await Product.create({
         name: "Industrial Steel Beams",
-        description: "High-grade structural steel for construction",
+        description: "High-grade structural steel for construction projects",
         pricePerUnit: 150,
         minimumOrderQuantity: 50,
         category: "Construction Materials",
-        images: ["https://via.placeholder.com/400"],
+        images: ["https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400"],
         vendorId: vendor._id,
-        vendorOrganizationId: vendor.organizationId
+        vendorOrganizationId: vendor.organizationId,
+        stock: 1000
       });
-      console.log("✅ Created Product:", product._id, "-", product.name);
+      console.log("✅ Created Product:");
+      console.log("   ID:", product._id.toString());
+      console.log("   Name:", product.name);
     } else {
-      console.log("✅ Found Product:", product._id, "-", product.name);
+      console.log("✅ Found Product:");
+      console.log("   ID:", product._id.toString());
+      console.log("   Name:", product.name);
     }
 
-    // 3. Find or create a buyer user
+    // 3. Find or create buyer
+    console.log("\n3️⃣ Looking for buyer user...");
     let buyer = await UserModel.findOne({ role: "BUYER" });
     
     if (!buyer) {
-      console.log("🛒 Creating test buyer...");
-      const bcrypt = await import("bcrypt");
-      const hashedPassword = await bcrypt.hash("testpassword123", 10);
+      console.log("🛒 No buyer found. Creating test buyer...");
       
-      // First create an organization for the buyer
+      // Import organization model
       const { OrganizationModel } = await import("../modules/organizations/organization.model.js");
+      
+      // Create buyer organization
       const buyerOrg = await OrganizationModel.create({
         name: "Test Buyer Corporation",
         type: "BUYER"
       });
 
+      // Import bcrypt
+      const bcrypt = await import("bcryptjs");
+      const hashedPassword = await bcrypt.hash("TestBuyer123!", 10);
+
+      // Create buyer user
       buyer = await UserModel.create({
         email: "testbuyer@example.com",
         passwordHash: hashedPassword,
@@ -77,12 +91,19 @@ const seedTestData = async () => {
         organizationId: buyerOrg._id,
         isEmailVerified: true
       });
-      console.log("✅ Created Buyer:", buyer._id, "-", buyer.email);
+      
+      console.log("✅ Created Buyer:");
+      console.log("   ID:", buyer._id.toString());
+      console.log("   Email:", buyer.email);
+      console.log("   Password: TestBuyer123!");
     } else {
-      console.log("✅ Found Buyer:", buyer._id, "-", buyer.email);
+      console.log("✅ Found Buyer:");
+      console.log("   ID:", buyer._id.toString());
+      console.log("   Email:", buyer.email);
     }
 
-    // 4. Check if test RFQ already exists
+    // 4. Check for existing test RFQ
+    console.log("\n4️⃣ Checking for existing test RFQs...");
     const existingRFQ = await RFQ.findOne({
       productId: product._id,
       buyerId: buyer._id,
@@ -90,62 +111,69 @@ const seedTestData = async () => {
     });
 
     if (existingRFQ) {
-      console.log("⚠️  Test RFQ already exists:", existingRFQ._id);
+      console.log("⚠️  Test RFQ already exists!");
       console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("📋 EXISTING TEST DATA:");
+      console.log("📋 EXISTING TEST DATA");
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("RFQ ID:", existingRFQ._id);
-      console.log("Vendor ID:", vendor._id);
-      console.log("Buyer ID:", buyer._id);
-      console.log("Product ID:", product._id);
+      console.log("RFQ ID:", existingRFQ._id.toString());
+      console.log("Status:", existingRFQ.status);
+      console.log("Quantity:", existingRFQ.quantity);
+      console.log("Unit Price: $" + existingRFQ.targetUnitPrice);
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
     } else {
       // 5. Create test RFQ
+      console.log("📝 Creating test RFQ...");
       const testRFQ = await RFQ.create({
         productId: product._id,
         buyerId: buyer._id,
         vendorId: vendor._id,
         quantity: 100,
         targetUnitPrice: 150,
-        message: "🧪 Test RFQ - Need 100 units for construction project. Urgent delivery required.",
+        message: "🧪 Test RFQ - Need 100 units for construction project. Urgent delivery required by end of month.",
         status: "PENDING"
       });
 
       console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("🎉 TEST RFQ CREATED SUCCESSFULLY!");
+      console.log("🎉 TEST RFQ CREATED!");
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("RFQ ID:", testRFQ._id);
-      console.log("Vendor ID:", vendor._id);
-      console.log("Buyer ID:", buyer._id);
+      console.log("RFQ ID:", testRFQ._id.toString());
       console.log("Product:", product.name);
-      console.log("Quantity:", testRFQ.quantity);
-      console.log("Unit Price:", testRFQ.targetUnitPrice);
-      console.log("Total Value: $" + (testRFQ.quantity * testRFQ.targetUnitPrice));
+      console.log("Quantity:", testRFQ.quantity + " units");
+      console.log("Unit Price: $" + testRFQ.targetUnitPrice);
+      console.log("Total Value: $" + (testRFQ.quantity * testRFQ.targetUnitPrice).toLocaleString());
+      console.log("Status:", testRFQ.status);
       console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
     }
 
-    // 6. Verify the RFQ can be queried
-    console.log("🔍 Verifying RFQ query...");
+    // 6. Verify query works
+    console.log("5️⃣ Verifying vendor can query RFQs...");
     const foundRFQs = await RFQ.find({ vendorId: vendor._id })
-      .populate("productId")
-      .populate("buyerId");
+      .populate("productId", "name")
+      .populate("buyerId", "email");
     
-    console.log(`✅ Query successful! Found ${foundRFQs.length} RFQ(s) for this vendor`);
-    
-    if (foundRFQs.length > 0) {
-      console.log("\n📦 Sample RFQ:");
-      console.log(JSON.stringify(foundRFQs[0], null, 2));
-    }
+    console.log(`✅ Query successful! Found ${foundRFQs.length} RFQ(s) for this vendor\n`);
 
-    console.log("\n✅ Seed complete! You can now test the vendor inbox.");
-    console.log("\n🔐 LOGIN CREDENTIALS:");
+    // 7. Summary
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("🔐 LOGIN CREDENTIALS");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("Vendor Email:", vendor.email);
+    console.log("Vendor ID:", vendor._id.toString());
+    console.log("");
     console.log("Buyer Email:", buyer.email);
-    console.log("Password: (use your actual password or 'testpassword123' if created by script)");
+    if (buyer.email === "testbuyer@example.com") {
+      console.log("Buyer Password: TestBuyer123!");
+    }
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("\n✅ Seed complete! You can now:");
+    console.log("   1. Login as vendor with the credentials above");
+    console.log("   2. Navigate to /vendor/rfq");
+    console.log("   3. You should see 1 RFQ in the inbox\n");
 
     process.exit(0);
-  } catch (error) {
-    console.error("❌ Seed Error:", error);
+  } catch (error:any) {
+    console.error("\n❌ Seed Error:", error.message);
+    console.error(error.stack);
     process.exit(1);
   }
 };
