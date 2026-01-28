@@ -9,21 +9,32 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function VendorRFQInbox() {
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log("🔐 MY VENDOR ID:", payload.userId);
+      console.log("🔐 FULL TOKEN PAYLOAD:", payload); // See all data in token
+    } else {
+      console.error("❌ NO TOKEN FOUND - User not logged in!");
+    }
+  }, []);
+
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("leads");
 
   // 1. Fetch Data with Fallback Logic
 const { data: rfqs, isLoading } = useQuery({
   queryKey: ["vendor-rfqs"],
- queryFn: async () => {
-  const res = await api.get("/rfq/v/all");
-  console.log("RAW RESPONSE:", res.data);
-  return res.data;
-}
-
+  queryFn: async () => {
+    const res = await api.get("/rfq/vendor");
+    console.log("RAW RESPONSE:", res.data);
+    return Array.isArray(res.data) ? res.data : [];
+  }
 });
 
   const deleteMutation = useMutation({

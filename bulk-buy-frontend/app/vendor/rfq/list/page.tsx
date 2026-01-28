@@ -14,8 +14,8 @@ export default function VendorRFQListPage() {
   const { data: rfqs, isLoading } = useQuery({
     queryKey: ["vendor-rfqs"],
     queryFn: async () => {
-      const res = await api.get("/rfq/vendor/my-rfqs"); // Your endpoint for vendor's incoming RFQs
-      return res.data;
+      const res = await api.get("/rfq/vendor");
+      return Array.isArray(res.data) ? res.data : [];
     }
   });
 

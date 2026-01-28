@@ -62,8 +62,18 @@ const vendorId = product.vendorId;
  */
 export const getVendorRFQs = async (req: any, res: any) => {
   try {
-    // SINGLE SOURCE OF TRUTH
     const vendorId = req.user.userId;
+
+    // 🔍 DIAGNOSTIC LOGS
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("🔍 Vendor ID from Token:", vendorId);
+    console.log("📊 Total RFQs in DB:", await RFQ.countDocuments());
+    console.log("🎯 RFQs for this vendor:", await RFQ.countDocuments({ vendorId }));
+    
+    // Check if vendorId exists in ANY RFQ
+    const allVendorIds = await RFQ.distinct("vendorId");
+    console.log("📋 All Vendor IDs in RFQs:", allVendorIds);
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     if (!vendorId) {
       return res.status(401).json({
@@ -71,16 +81,14 @@ export const getVendorRFQs = async (req: any, res: any) => {
       });
     }
 
-    console.log("🔍 Fetching RFQs for Vendor ID:", vendorId);
-
     const rfqs = await RFQ.find({ vendorId })
       .populate("productId", "name pricePerUnit images category stock")
       .populate("buyerId", "name email organizationName")
       .sort({ createdAt: -1 });
 
-    console.log(`✅ Found ${rfqs.length} RFQs for vendor terminal`);
+    console.log(`✅ Returning ${rfqs.length} RFQs`);
 
-    res.status(200).json(rfqs);
+    res.status(200).json(rfqs); // ✅ Changed from 201 to 200
   } catch (error: any) {
     console.error("❌ getVendorRFQs Error:", error.message);
     res.status(500).json({ message: error.message });
