@@ -1,176 +1,198 @@
 import { Request, Response } from "express";
-// Consolidate imports: Using both the named model and the default if necessary
-import RFQ from "./rfq.model.js"; 
-import Product from "../products/product.model.js"; 
+import RFQ from "./rfq.model.js";
+import Product from "../products/product.model.js";
 import { OrderModel } from "../orders/order.model.js";
-import { RFQStatus } from "./rfq.types.js";
-import { createNotification } from "../notification/notification.service.js";
-import { NotificationType } from "../notification/notification.types.js";
-import { UserModel } from "../users/user.model.js";
-/**
- * Buyer creates RFQ
- */
-// backend/src/modules/rfq/rfq.controller.ts
 
-export const createRFQ = async (req: any, res: any) => {
+/**
+ * ✅ Buyer creates RFQ
+ */
+export const createRFQ = async (req: any, res: Response) => {
   try {
     const { productId, quantity, targetUnitPrice, message } = req.body;
-    const buyerId = req.user.userId; // Extracted from verified JWT
+    const buyerId = req.user.userId;
 
-    // 1. Find the product to get the Vendor's ID
     const product = await Product.findById(productId);
-    
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // 2. Identify the Vendor
-    // IMPORTANT: Make sure your Product model uses 'vendorOrganizationId' or 'vendorId'
-const vendorId = product.vendorId;
+    const vendorId = product.vendorId;
     if (!vendorId) {
       return res.status(400).json({ 
         message: "This product does not have an assigned vendor." 
       });
     }
 
-    // 3. Create the RFQ with the required vendorId
     const newRFQ = await RFQ.create({
       productId,
       buyerId,
-      vendorId, // 👈 This fixes the "Path vendorId is required" error
+      vendorId,
       quantity: Number(quantity),
       targetUnitPrice: targetUnitPrice ? Number(targetUnitPrice) : product.pricePerUnit,
       message,
       status: "PENDING"
     });
 
-    console.log("✅ RFQ Created Successfully for Vendor:", vendorId);
+    console.log("✅ RFQ Created for Vendor:", vendorId);
 
     return res.status(201).json({
       success: true,
       message: "Request sent to vendor!",
       data: newRFQ
     });
-
   } catch (error: any) {
-    console.error("❌ RFQ Controller Error:", error.message);
+    console.error("❌ createRFQ Error:", error.message);
     return res.status(500).json({ message: error.message });
   }
 };
+
 /**
- * Vendor views incoming RFQs
+ * ✅ Vendor views incoming RFQs - ENHANCED WITH DIAGNOSTICS
  */
-export const getVendorRFQs = async (req: any, res: any) => {
+import mongoose from "mongoose";
+
+export const getVendorRFQs = async (req: any, res: Response) => {
   try {
-    const vendorId = req.user.userId;
-
-    // 🔍 DIAGNOSTIC LOGS
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("🔍 Vendor ID from Token:", vendorId);
-    console.log("📊 Total RFQs in DB:", await RFQ.countDocuments());
-    console.log("🎯 RFQs for this vendor:", await RFQ.countDocuments({ vendorId }));
+    console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("🔍 VENDOR RFQ FETCH REQUEST");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     
-    // Check if vendorId exists in ANY RFQ
-    const allVendorIds = await RFQ.distinct("vendorId");
-    console.log("📋 All Vendor IDs in RFQs:", allVendorIds);
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    // 1. Get vendor ID from token
+    const vendorIdString = req.user?.userId;
+    
+    console.log("1️⃣ Auth Check:");
+    console.log("   req.user:", req.user);
+    console.log("   vendorId (string):", vendorIdString);
+    console.log("   vendorId type:", typeof vendorIdString);
 
-    if (!vendorId) {
+    if (!vendorIdString) {
+      console.log("❌ UNAUTHORIZED: No vendor ID found");
       return res.status(401).json({
         message: "Unauthorized: Vendor identity missing"
       });
     }
 
-    const rfqs = await RFQ.find({ vendorId })
-      .populate("productId", "name pricePerUnit images category stock")
-      .populate("buyerId", "name email organizationName")
+    // 2. Convert to ObjectId for MongoDB query
+    let vendorObjectId: mongoose.Types.ObjectId;
+    try {
+      vendorObjectId = new mongoose.Types.ObjectId(vendorIdString);
+      console.log("   vendorId (ObjectId):", vendorObjectId);
+    } catch (err) {
+      console.error("❌ Invalid ObjectId format:", vendorIdString);
+      return res.status(400).json({ message: "Invalid vendor ID format" });
+    }
+
+    // 3. Database diagnostics
+    console.log("\n2️⃣ Database Diagnostics:");
+    const totalRFQs = await RFQ.countDocuments();
+    const vendorRFQCount = await RFQ.countDocuments({ vendorId: vendorObjectId });
+    const allVendorIds = await RFQ.distinct("vendorId");
+    
+    console.log(`   Total RFQs in DB: ${totalRFQs}`);
+    console.log(`   RFQs for this vendor: ${vendorRFQCount}`);
+    console.log("   All Vendor IDs in RFQs:", allVendorIds.map(id => id.toString()));
+    
+    // 4. ID comparison
+    console.log("\n3️⃣ ID Comparison:");
+    if (allVendorIds.length > 0) {
+      allVendorIds.forEach((id, index) => {
+        const matches = id.toString() === vendorIdString;
+        console.log(`   RFQ[${index}] vendorId: ${id} - Match: ${matches ? '✅' : '❌'}`);
+      });
+    }
+
+    // 5. Fetch RFQs using ObjectId
+    console.log("\n4️⃣ Fetching RFQs...");
+    const rfqs = await RFQ.find({ vendorId: vendorObjectId })
+      .populate({
+        path: "productId",
+        select: "name pricePerUnit images category stock"
+      })
+      .populate({
+        path: "buyerId",
+        select: "email"
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    console.log(`✅ Found ${rfqs.length} RFQs`);
+    
+    if (rfqs.length > 0) {
+      console.log("\n📦 First RFQ:");
+      console.log("   RFQ ID:", rfqs[0]._id);
+      console.log("   Product:", rfqs[0].productId?.name);
+      console.log("   Status:", rfqs[0].status);
+      console.log("   Quantity:", rfqs[0].quantity);
+    } else {
+      console.log("\n⚠️  No RFQs found!");
+      console.log("   Possible causes:");
+      console.log("   - No buyers have created RFQs yet");
+      console.log("   - Products don't have correct vendorId");
+      console.log("   - Run the seed script: npx tsx src/scripts/seedTestRFQ.ts");
+    }
+    
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+    return res.status(200).json(rfqs);
+
+  } catch (error: any) {
+    console.error("\n❌ getVendorRFQs ERROR:", error);
+    return res.status(500).json({ 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+};
+/**
+ * ✅ Buyer views their RFQs
+ */
+export const getBuyerRFQs = async (req: any, res: Response) => {
+  try {
+    const buyerId = req.user?.userId;
+
+    if (!buyerId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const rfqs = await RFQ.find({ buyerId })
+      .populate("productId", "name category pricePerUnit images")
+      .populate("vendorId", "name email organizationName")
       .sort({ createdAt: -1 });
 
-    console.log(`✅ Returning ${rfqs.length} RFQs`);
-
-    res.status(200).json(rfqs); // ✅ Changed from 201 to 200
+    return res.status(200).json(rfqs);
   } catch (error: any) {
-    console.error("❌ getVendorRFQs Error:", error.message);
-    res.status(500).json({ message: error.message });
+    console.error("❌ getBuyerRFQs Error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
 /**
- * Buyer views their own submitted RFQs
+ * ✅ Get single RFQ by ID
  */
-// BACKEND CODE EXAMPLE
-export const getBuyerRFQs = async (req: any, res: Response) => {
+export const getRFQById = async (req: any, res: Response) => {
   try {
-    // 1. Use the same key as createRFQ (userId)
-    const buyerId = req.user?.userId || req.user?._id; 
-
-    if (!buyerId) {
-      return res.status(401).json({ message: "Unauthorized: No user identity found" });
-    }
-
-    console.log("Fetching RFQs for Buyer ID:", buyerId);
-
-    const rfqs = await RFQ.find({ buyerId: buyerId })
-      .populate("productId", "name category price images pricePerUnit") 
-      .populate("vendorId", "organizationName email")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json(rfqs);
-  } catch (error: any) {
-    console.error("CRITICAL BACKEND ERROR:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
-export const getRFQById = async (req: any, res: any) => {
-  console.log("DEBUG: getRFQById hit with ID:", req.params.id); // <--- ADD THIS
-  try {
+    console.log("🔍 Fetching RFQ ID:", req.params.id);
+    
     const rfq = await RFQ.findById(req.params.id)
       .populate("productId")
       .populate("buyerId", "name email")
-      .populate("vendorId", "name"); // 👈 ADD THIS LINE
+      .populate("vendorId", "name email");
     
-    if (!rfq) return res.status(404).json({ message: "RFQ not found" });
-    res.status(200).json(rfq);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-export const updateRFQStatus = async (req: any, res: any) => {
-  try {
-    const { id } = req.params;
-    const { status, vendorCounterPrice } = req.body;
-
-    const rfq = await RFQ.findByIdAndUpdate(
-      id,
-      {
-        status,
-        ...(vendorCounterPrice !== undefined && {
-          vendorCounterPrice
-        })
-      },
-      { new: true }
-    ).populate("productId buyerId vendorId");
-
     if (!rfq) {
       return res.status(404).json({ message: "RFQ not found" });
-    } 
-    if (rfq.status === "ACCEPTED") {
-  return res.status(403).json({
-    message: "RFQ is locked after acceptance"
-  });
-}
+    }
 
-
-    res.status(200).json(rfq);
+    return res.status(200).json(rfq);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error("❌ getRFQById Error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-
-export const respondToRFQ = async (req: any, res: any) => {
+/**
+ * ✅ Vendor responds to RFQ
+ */
+export const respondToRFQ = async (req: any, res: Response) => {
   try {
     const vendorId = req.user.userId;
     const { rfqId } = req.params;
@@ -179,14 +201,14 @@ export const respondToRFQ = async (req: any, res: any) => {
     const rfq = await RFQ.findOne({ _id: rfqId, vendorId });
 
     if (!rfq) {
-      return res.status(404).json({ message: "RFQ not found" });
+      return res.status(404).json({ message: "RFQ not found or unauthorized" });
     }
 
     if (rfq.status === "ACCEPTED") {
-  return res.status(403).json({
-    message: "Negotiation closed. RFQ already accepted."
-  });
-}
+      return res.status(403).json({
+        message: "Negotiation closed. RFQ already accepted."
+      });
+    }
 
     rfq.status = status;
     if (vendorCounterPrice) {
@@ -195,7 +217,7 @@ export const respondToRFQ = async (req: any, res: any) => {
 
     await rfq.save();
 
-    // 🔐 CREATE ORDER ONLY ON ACCEPT
+    // Create order on acceptance
     if (status === "ACCEPTED") {
       const existingOrder = await OrderModel.findOne({ rfqId: rfq._id });
 
@@ -207,16 +229,56 @@ export const respondToRFQ = async (req: any, res: any) => {
           productId: rfq.productId,
           quantity: rfq.quantity,
           unitPrice: rfq.vendorCounterPrice || rfq.targetUnitPrice,
-          totalAmount:
-            rfq.quantity *
-            (rfq.vendorCounterPrice || rfq.targetUnitPrice)
+          totalAmount: rfq.quantity * (rfq.vendorCounterPrice || rfq.targetUnitPrice)
         });
       }
     }
 
-    res.status(200).json({ message: "RFQ updated successfully" });
+    return res.status(200).json({ 
+      message: "RFQ updated successfully",
+      rfq
+    });
   } catch (error: any) {
-    console.error("❌ respondToRFQ error:", error.message);
-    res.status(500).json({ message: error.message });
+    console.error("❌ respondToRFQ Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * ✅ Update RFQ status (alternative endpoint)
+ */
+export const updateRFQStatus = async (req: any, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status, vendorCounterPrice } = req.body;
+
+    const rfq = await RFQ.findById(id);
+
+    if (!rfq) {
+      return res.status(404).json({ message: "RFQ not found" });
+    }
+
+    if (rfq.status === "ACCEPTED") {
+      return res.status(403).json({
+        message: "RFQ is locked after acceptance"
+      });
+    }
+
+    rfq.status = status;
+    if (vendorCounterPrice !== undefined) {
+      rfq.vendorCounterPrice = vendorCounterPrice;
+    }
+
+    await rfq.save();
+
+    const populated = await RFQ.findById(rfq._id)
+      .populate("productId")
+      .populate("buyerId")
+      .populate("vendorId");
+
+    return res.status(200).json(populated);
+  } catch (error: any) {
+    console.error("❌ updateRFQStatus Error:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
