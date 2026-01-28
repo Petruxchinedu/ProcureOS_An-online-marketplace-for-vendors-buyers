@@ -25,5 +25,6 @@
   "/vendor/invoice/[id]/page": "/vendor/invoice/[id]",
   "/vendor/products/create/page": "/vendor/products/create",
   "/vendor/rfq/[id]/page": "/vendor/rfq/[id]",
+  "/vendor/rfq/list/page": "/vendor/rfq/list",
   "/vendor/rfq/page": "/vendor/rfq"
 }

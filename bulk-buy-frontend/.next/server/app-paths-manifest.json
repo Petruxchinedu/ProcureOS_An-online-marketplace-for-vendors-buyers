@@ -25,5 +25,6 @@
   "/vendor/invoice/[id]/page": "app/vendor/invoice/[id]/page.js",
   "/vendor/products/create/page": "app/vendor/products/create/page.js",
   "/vendor/rfq/[id]/page": "app/vendor/rfq/[id]/page.js",
+  "/vendor/rfq/list/page": "app/vendor/rfq/list/page.js",
   "/vendor/rfq/page": "app/vendor/rfq/page.js"
 }
