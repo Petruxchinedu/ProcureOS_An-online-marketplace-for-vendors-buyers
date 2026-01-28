@@ -36,11 +36,11 @@ export default function VendorRFQListPage() {
 
         {/* PROPOSAL LIST */}
         <div className="grid gap-4">
-          {rfqs?.length > 0 ? (
+          {rfqs && rfqs.length > 0 ? (
             rfqs.map((rfq: any) => (
               <Link 
                 key={rfq._id} 
-                href={`/vendor/rfq/${rfq._id}`} // Redirect to a page where vendor can Accept/Counter
+                href={`/vendor/rfq/${rfq._id}`}
                 className="group bg-[#0F172A] border border-blue-900/20 p-8 rounded-[2rem] flex flex-col md:flex-row md:items-center justify-between hover:border-blue-500 transition-all hover:shadow-2xl hover:shadow-blue-500/5"
               >
                 <div className="flex items-center gap-6">
