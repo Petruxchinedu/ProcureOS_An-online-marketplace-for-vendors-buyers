@@ -145,15 +145,14 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/bulk-buy-frontend/node_modules/.pnpm/axios@1.13.2/node_modules/axios/lib/axios.js [app-ssr] (ecmascript)");
 ;
 const api = __TURBOPACK__imported__module__$5b$project$5d2f$bulk$2d$buy$2d$frontend$2f$node_modules$2f2e$pnpm$2f$axios$40$1$2e$13$2e$2$2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].create({
-    // Use the Vercel URL in production, localhost in development
     baseURL: ("TURBOPACK compile-time value", "https://procureos-an-online-marketplace-for.onrender.com") || "http://localhost:5000/api",
+    // ✅ Make sure /api is included here ^^^
     headers: {
         "Content-Type": "application/json"
     },
-    // Essential for sending cookies if you use them for sessions
     withCredentials: true
 });
-// REQUEST INTERCEPTOR: This attaches the Token to every call
+// REQUEST INTERCEPTOR
 api.interceptors.request.use((config)=>{
     if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
     ;
@@ -161,10 +160,10 @@ api.interceptors.request.use((config)=>{
 }, (error)=>{
     return Promise.reject(error);
 });
-// RESPONSE INTERCEPTOR: This catches 401s (expired tokens) 
+// RESPONSE INTERCEPTOR
 api.interceptors.response.use((response)=>response, (error)=>{
     if (error.response?.status === 401) {
-        console.warn("Unauthorized! Redirecting to login...");
+        console.warn("⚠️  Unauthorized! Token may be expired.");
         if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
         ;
     }

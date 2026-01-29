@@ -13,15 +13,21 @@ import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 
-// Apply auth to all routes
+// Apply auth to ALL routes
 router.use(protect);
 
-// ✅ CRITICAL: Static routes FIRST
+/**
+ * ✅ CRITICAL ORDER:
+ * Static/named routes MUST be defined BEFORE dynamic /:id routes
+ * Otherwise Express will match "/vendor" as if it's an ID parameter
+ */
+
+// 1. STATIC ROUTES FIRST (specific paths)
 router.get("/vendor", requireRole(UserRole.VENDOR), getVendorRFQs);
 router.get("/buyer", requireRole(UserRole.BUYER), getBuyerRFQs);
 router.post("/", requireRole(UserRole.BUYER), createRFQ);
 
-// ✅ Dynamic routes LAST
+// 2. DYNAMIC ROUTES LAST (parameterized paths)
 router.get("/:id", getRFQById);
 router.patch("/:id/status", updateRFQStatus);
 router.patch("/:id/respond", respondToRFQ);

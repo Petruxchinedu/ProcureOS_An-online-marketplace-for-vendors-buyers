@@ -171,9 +171,18 @@ export const getBuyerRFQs = async (req: any, res: Response) => {
  */
 export const getRFQById = async (req: any, res: Response) => {
   try {
-    console.log("🔍 Fetching RFQ ID:", req.params.id);
+    const { id } = req.params;
+    console.log("🔍 Fetching RFQ ID:", id);
     
-    const rfq = await RFQ.findById(req.params.id)
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.warn("⚠️  Invalid RFQ ID format:", id);
+      return res.status(400).json({ 
+        message: "Invalid RFQ ID format. Must be a valid MongoDB ObjectId."
+      });
+    }
+    
+    const rfq = await RFQ.findById(id)
       .populate("productId")
       .populate("buyerId", "name email")
       .populate("vendorId", "name email");
@@ -195,10 +204,18 @@ export const getRFQById = async (req: any, res: Response) => {
 export const respondToRFQ = async (req: any, res: Response) => {
   try {
     const vendorId = req.user.userId;
-    const { rfqId } = req.params;
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        message: "Invalid RFQ ID format."
+      });
+    }
+
     const { status, vendorCounterPrice } = req.body;
 
-    const rfq = await RFQ.findOne({ _id: rfqId, vendorId });
+    const rfq = await RFQ.findOne({ _id: id, vendorId });
 
     if (!rfq) {
       return res.status(404).json({ message: "RFQ not found or unauthorized" });
@@ -250,6 +267,14 @@ export const respondToRFQ = async (req: any, res: Response) => {
 export const updateRFQStatus = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
+
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        message: "Invalid RFQ ID format."
+      });
+    }
+
     const { status, vendorCounterPrice } = req.body;
 
     const rfq = await RFQ.findById(id);
