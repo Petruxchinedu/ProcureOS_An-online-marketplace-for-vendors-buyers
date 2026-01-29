@@ -3,13 +3,21 @@ import {
   createOrderFromRFQ,
   markOrderFulfilled,
   getInvoice,
+  getInvoiceByRFQId 
 } from "./order.controller.js";
 import { protect } from "../../middlewares/requireAuth.js";
+import { requireRole } from "../../middlewares/requireRole.js";
+import { UserRole } from "../users/user.types.js";
 
 const router = Router();
 
-router.post("/rfq/:rfqId/accept", protect, createOrderFromRFQ);
-router.patch("/:orderId/fulfill", protect, markOrderFulfilled);
-router.get("/:orderId/invoice", protect, getInvoice);
+router.use(protect);
+
+router.post("/rfq/:rfqId/accept", createOrderFromRFQ);
+router.patch("/:orderId/fulfill", markOrderFulfilled);
+
+// Invoice routes - specific path first!
+router.get("/invoice/rfq/:rfqId", requireRole(UserRole.VENDOR), getInvoiceByRFQId);
+router.get("/:orderId/invoice", getInvoice);
 
 export default router;

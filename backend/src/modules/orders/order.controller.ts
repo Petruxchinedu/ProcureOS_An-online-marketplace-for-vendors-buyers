@@ -132,3 +132,114 @@ export const getInvoice = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+/**
+ * Generate invoice for an accepted RFQ/Order
+ */
+export const getInvoiceByRFQId = async (req: any, res: Response) => {
+  try {
+    const { rfqId } = req.params;
+    const vendorId = req.user.userId;
+
+    console.log("📄 Generating invoice for RFQ:", rfqId);
+
+    // 1. Find the RFQ
+    const rfq = await RFQModel.findById(rfqId)
+      .populate("productId", "name description category")
+      .populate("buyerId", "email organizationName")
+      .populate("vendorId", "email organizationName");
+
+    if (!rfq) {
+      return res.status(404).json({ message: "RFQ not found" });
+    }
+
+    // 2. Verify vendor owns this RFQ
+    if (rfq.vendorId._id.toString() !== vendorId) {
+      return res.status(403).json({ message: "Unauthorized: Not your RFQ" });
+    }
+
+    // 3. Check if RFQ is accepted
+    if (rfq.status !== "ACCEPTED") {
+      return res.status(400).json({ 
+        message: "Cannot generate invoice. RFQ must be accepted first." 
+      });
+    }
+
+    // 4. Find or create order
+    let order = await OrderModel.findOne({ rfqId: rfq._id });
+
+    if (!order) {
+      // Create order if it doesn't exist
+      order = await OrderModel.create({
+        rfqId: rfq._id,
+        buyerId: rfq.buyerId,
+        vendorId: rfq.vendorId,
+        productId: rfq.productId,
+        quantity: rfq.quantity,
+        unitPrice: rfq.vendorCounterPrice || rfq.targetUnitPrice,
+        totalAmount: rfq.quantity * (rfq.vendorCounterPrice || rfq.targetUnitPrice),
+        status: "PENDING"
+      });
+    }
+
+    // 5. Generate invoice number
+    const invoiceNumber = `INV-${Date.now()}-${rfq._id.toString().slice(-6).toUpperCase()}`;
+
+    // 6. Calculate amounts
+    const subtotal = rfq.quantity * (rfq.vendorCounterPrice || rfq.targetUnitPrice);
+    const platformFee = subtotal * 0.02; // 2% platform fee
+    const total = subtotal;
+    const netRevenue = subtotal - platformFee;
+
+    // 7. Build invoice response
+    const invoice = {
+      invoiceNumber,
+      rfqId: rfq._id,
+      orderId: order._id,
+      status: "PAID", // or order.status
+      issuedAt: order.createdAt,
+      
+      // Parties
+      vendor: {
+        id: rfq.vendorId._id,
+        name: rfq.vendorId.organizationName || rfq.vendorId.email,
+        email: rfq.vendorId.email
+      },
+      buyer: {
+        id: rfq.buyerId._id,
+        name: rfq.buyerId.organizationName || rfq.buyerId.email,
+        email: rfq.buyerId.email,
+        organizationName: rfq.buyerId.organizationName
+      },
+
+      // Product details
+      product: {
+        id: rfq.productId._id,
+        name: rfq.productId.name,
+        description: rfq.productId.description,
+        category: rfq.productId.category
+      },
+
+      // Amounts
+      quantity: rfq.quantity,
+      unitPrice: rfq.vendorCounterPrice || rfq.targetUnitPrice,
+      subtotal,
+      platformFee,
+      total,
+      netRevenue,
+
+      // Metadata
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt
+    };
+
+    console.log("✅ Invoice generated successfully");
+
+    return res.status(200).json(invoice);
+
+  } catch (error: any) {
+    console.error("❌ getInvoiceByRFQId Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
