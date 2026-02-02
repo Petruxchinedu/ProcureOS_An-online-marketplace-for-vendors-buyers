@@ -1,6 +1,7 @@
 export enum OrganizationType {
   BUYER = "BUYER",
   VENDOR = "VENDOR",
+    ADMIN = "ADMIN" 
 }
 
 export enum OrganizationStatus {

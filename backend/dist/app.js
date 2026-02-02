@@ -20,6 +20,7 @@ const order_routes_js_1 = __importDefault(require("./modules/orders/order.routes
 const escrow_routes_js_1 = __importDefault(require("./modules/escrow/escrow.routes.js"));
 const rfq_routes_js_1 = __importDefault(require("./modules/rfq/rfq.routes.js"));
 const payment_routes_js_1 = __importDefault(require("./modules/payment/payment.routes.js"));
+const admin_routes_js_1 = __importDefault(require("./modules/admin/admin.routes.js"));
 // Import your RFQ model for the webhook (ensure path is correct and has .js)
 const rfq_model_js_1 = __importDefault(require("./modules/rfq/rfq.model.js"));
 const stripe_1 = __importDefault(require("stripe"));
@@ -79,6 +80,7 @@ exports.app.use("/api/orders", order_routes_js_1.default);
 exports.app.use("/api/escrow", escrow_routes_js_1.default);
 exports.app.use("/api/rfq", rfq_routes_js_1.default);
 exports.app.use("/api/payments", payment_routes_js_1.default);
+exports.app.use("/api/admin", admin_routes_js_1.default);
 /* Error Handling */
 exports.app.use(notFound_middleware_js_1.notFound);
 exports.app.use(error_middleware_js_1.errorHandler);

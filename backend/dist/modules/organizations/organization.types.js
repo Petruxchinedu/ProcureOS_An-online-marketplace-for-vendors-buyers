@@ -5,6 +5,7 @@ var OrganizationType;
 (function (OrganizationType) {
     OrganizationType["BUYER"] = "BUYER";
     OrganizationType["VENDOR"] = "VENDOR";
+    OrganizationType["ADMIN"] = "ADMIN";
 })(OrganizationType || (exports.OrganizationType = OrganizationType = {}));
 var OrganizationStatus;
 (function (OrganizationStatus) {

@@ -159,8 +159,16 @@ exports.getBuyerRFQs = getBuyerRFQs;
  */
 const getRFQById = async (req, res) => {
     try {
-        console.log("🔍 Fetching RFQ ID:", req.params.id);
-        const rfq = await rfq_model_js_1.default.findById(req.params.id)
+        const { id } = req.params;
+        console.log("🔍 Fetching RFQ ID:", id);
+        // Validate MongoDB ObjectId format
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            console.warn("⚠️  Invalid RFQ ID format:", id);
+            return res.status(400).json({
+                message: "Invalid RFQ ID format. Must be a valid MongoDB ObjectId."
+            });
+        }
+        const rfq = await rfq_model_js_1.default.findById(id)
             .populate("productId")
             .populate("buyerId", "name email")
             .populate("vendorId", "name email");
@@ -181,9 +189,15 @@ exports.getRFQById = getRFQById;
 const respondToRFQ = async (req, res) => {
     try {
         const vendorId = req.user.userId;
-        const { rfqId } = req.params;
+        const { id } = req.params;
+        // Validate MongoDB ObjectId format
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid RFQ ID format."
+            });
+        }
         const { status, vendorCounterPrice } = req.body;
-        const rfq = await rfq_model_js_1.default.findOne({ _id: rfqId, vendorId });
+        const rfq = await rfq_model_js_1.default.findOne({ _id: id, vendorId });
         if (!rfq) {
             return res.status(404).json({ message: "RFQ not found or unauthorized" });
         }
@@ -229,6 +243,12 @@ exports.respondToRFQ = respondToRFQ;
 const updateRFQStatus = async (req, res) => {
     try {
         const { id } = req.params;
+        // Validate MongoDB ObjectId format
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Invalid RFQ ID format."
+            });
+        }
         const { status, vendorCounterPrice } = req.body;
         const rfq = await rfq_model_js_1.default.findById(id);
         if (!rfq) {
