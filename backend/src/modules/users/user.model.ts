@@ -20,6 +20,7 @@ export interface UserDocument {
   updatedAt: Date;
 }
 
+
 const userSchema = new Schema<UserDocument>(
   {
     email: {
@@ -36,7 +37,7 @@ const userSchema = new Schema<UserDocument>(
       required: true,
       select: false,
     },
-
+    
     role: {
       type: String,
       enum: Object.values(UserRole),

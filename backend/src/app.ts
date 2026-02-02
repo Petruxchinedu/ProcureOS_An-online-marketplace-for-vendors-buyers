@@ -15,6 +15,7 @@ import orderRoutes from "./modules/orders/order.routes.js";
 import escrowRoutes from "./modules/escrow/escrow.routes.js";
 import rfqRoutes from "./modules/rfq/rfq.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 
 // Import your RFQ model for the webhook (ensure path is correct and has .js)
 import IRFQ  from "./modules/rfq/rfq.model.js"
@@ -89,6 +90,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/escrow", escrowRoutes);
 app.use("/api/rfq", rfqRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
 
 /* Error Handling */
 app.use(notFound);
