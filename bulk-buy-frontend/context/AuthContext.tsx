@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = useCallback(async (tokenOverride?: string) => {
     try {
-      // Pass the token directly if we just logged in
       const res = await getMe(tokenOverride);
       setUser(res.data.user ?? res.data);
     } catch (error: any) {
@@ -38,8 +37,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const logout = useCallback(() => {
-    document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    localStorage.removeItem("accessToken");
+    // Clear all token storage
+    localStorage.removeItem("token");
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     setUser(null);
     window.location.href = "/login";
   }, []);
@@ -51,8 +51,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser, logout }}>
       {!loading ? children : (
-        <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="h-screen w-screen flex items-center justify-center bg-[#020617]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <p className="text-blue-500 font-black text-xs uppercase tracking-widest">Loading...</p>
+          </div>
         </div>
       )}
     </AuthContext.Provider>

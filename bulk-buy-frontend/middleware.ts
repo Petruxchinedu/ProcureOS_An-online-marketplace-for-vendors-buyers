@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextRequest } from "next/request";
 
 export function middleware(req: NextRequest) {
-  // Try to get token from cookies or authorization header
-  const token = req.cookies.get("accessToken")?.value || 
-                req.cookies.get("token")?.value ||
+  // Try to get token from cookie or local storage (via header)
+  const token = req.cookies.get("token")?.value || 
                 req.headers.get("authorization")?.split(" ")[1];
 
   const protectedRoutes = ["/dashboard", "/vendor", "/buyer", "/admin"];
@@ -17,12 +16,14 @@ export function middleware(req: NextRequest) {
   if (isProtectedRoute) {
     // If no token, redirect to login
     if (!token) {
+      console.log("⚠️  No token found, redirecting to login");
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
     try {
       // Decode JWT to get user role
       const payload = JSON.parse(atob(token.split(".")[1]));
+      console.log("🔐 Token payload:", { role: payload.role, path: req.nextUrl.pathname });
       
       // Admin routes protection - ONLY admins can access
       if (req.nextUrl.pathname.startsWith("/admin")) {

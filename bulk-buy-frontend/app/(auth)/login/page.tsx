@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { Mail, Lock, LogIn, Zap, ShieldCheck, Globe, ChevronRight } from "lucide-react";
+import { Mail, Lock, LogIn, Zap, ShieldCheck, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const loginSchema = z.object({
@@ -32,26 +32,43 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await loginUser(data);
-      const token = res.data.token || res.data.accessToken; 
+      const token = res.data.token;
       const user = res.data.user;
 
-      if (!token) throw new Error("No token received");
-
-      localStorage.setItem("token", token);
-      document.cookie = `accessToken=${token}; path=/; max-age=86400; SameSite=Lax`;
-      
-      await refreshUser(token);      
-      toast.success("Identity Verified. Welcome.");
-
-      if (user.role === "VENDOR") {
-        router.push("/vendor/rfq"); 
-      } else if (user.role === "ADMIN") {
-        router.push("/admin");
-      } else if (user.role === "BUYER") {
-        router.push("/dashboard");
+      if (!token) {
+        throw new Error("No token received from server");
       }
+
+      console.log("✅ Login successful:", { role: user.role, email: user.email });
+
+      // Store token in localStorage AND cookie
+      localStorage.setItem("token", token);
+      document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax`; // 7 days
+      
+      // Refresh user context
+      await refreshUser(token);
+      
+      toast.success("Authentication Successful");
+
+      // Role-based redirect
+      if (user.role === "ADMIN") {
+        console.log("🔑 Redirecting to admin dashboard...");
+        router.push("/admin");
+      } else if (user.role === "VENDOR") {
+        console.log("🏭 Redirecting to vendor dashboard...");
+        router.push("/vendor/rfq");
+      } else if (user.role === "BUYER") {
+        console.log("🛒 Redirecting to buyer dashboard...");
+        router.push("/dashboard");
+      } else {
+        // Fallback
+        router.push("/");
+      }
+
     } catch (err: any) {
-      setIsLoading(false); 
+      setIsLoading(false);
+      console.error("❌ Login error:", err);
+      
       if (err.response?.status === 401) {
         setError("password", {
           type: "manual",
