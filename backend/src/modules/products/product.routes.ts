@@ -2,9 +2,9 @@ import { Router } from "express";
 import { 
   createProduct, 
   getVendorProducts, 
-  getAllProducts, 
   getProductById,
-  getMyProducts, 
+  getAllProducts,
+  getMyProducts,
   deleteProduct,
   updateProduct
 } from "./product.controller.js";
@@ -13,16 +13,30 @@ import { requireRole } from "../../middlewares/requireRole.js";
 import { UserRole } from "../users/user.types.js";
 
 const router = Router();
-// 2. PROTECTED VENDOR ROUTES (Keep security here)
-router.post("/", protect, requireRole(UserRole.VENDOR) as any, createProduct);
-router.get("/my-inventory", protect, requireRole(UserRole.VENDOR) as any, getVendorProducts);
-router.get("/vendor/my-products",protect, getMyProducts);
 
-// 1. PUBLIC ROUTES (Remove requireAuth so the 401 disappears)
-router.get("/", getAllProducts); 
-router.get("/:id", getProductById);
-router.post("/", protect, createProduct);
-router.delete("/:id", protect, deleteProduct);
-router.put("/:id", protect, updateProduct);
+/**
+ * ✅ CRITICAL ROUTE ORDER:
+ * 1. Most specific routes FIRST
+ * 2. Dynamic routes (:id) LAST
+ */
+
+// =====================================
+// VENDOR-SPECIFIC ROUTES (Protected)
+// =====================================
+router.get("/vendor/my-products", protect, requireRole(UserRole.VENDOR), getMyProducts);
+router.get("/my-inventory", protect, requireRole(UserRole.VENDOR), getVendorProducts);
+router.post("/", protect, requireRole(UserRole.VENDOR), createProduct);
+router.put("/:id", protect, requireRole(UserRole.VENDOR), updateProduct);
+router.delete("/:id", protect, requireRole(UserRole.VENDOR), deleteProduct);
+
+// =====================================
+// PUBLIC ROUTES (No auth required)
+// =====================================
+router.get("/", getAllProducts); // List all products
+
+// =====================================
+// DYNAMIC ROUTES (Must be LAST!)
+// =====================================
+router.get("/:id", getProductById); // Get single product by ID
 
 export default router;
