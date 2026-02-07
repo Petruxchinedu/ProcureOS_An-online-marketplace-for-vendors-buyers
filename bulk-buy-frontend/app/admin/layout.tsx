@@ -12,9 +12,11 @@ import {
   TrendingUp,
   LogOut,
   Menu,
-  X
+  X,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -43,7 +45,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [router]);
 
   const handleLogout = () => {
+    // Clear all storage
     localStorage.removeItem("token");
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    
+    // Show success message
+    toast.success("Logged out successfully");
+    
+    // Redirect to login
     router.push("/login");
   };
 
@@ -62,7 +71,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside
         className={cn(
           "fixed top-0 left-0 z-40 h-screen transition-transform bg-slate-900/80 backdrop-blur-xl border-r border-slate-800",
-          isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-0"
+          isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-0",
+          "md:translate-x-0" // Always visible on desktop
         )}
       >
         <div className="h-full flex flex-col">
@@ -80,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -101,29 +111,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
 
-          {/* User Info */}
+          {/* User Info & Logout */}
           <div className="p-4 border-t border-slate-800">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center gap-3 mb-3 px-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                <User size={16} className="text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
                 <p className="text-white font-bold text-sm truncate">{userEmail}</p>
                 <p className="text-xs text-slate-500 font-semibold">Administrator</p>
               </div>
-              <button
-                onClick={handleLogout}
-                className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
-              >
-                <LogOut size={18} />
-              </button>
             </div>
+            
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors font-bold text-sm"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className={cn("transition-all", isSidebarOpen ? "ml-64" : "ml-0")}>
-        {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
-          <div className="px-6 py-4 flex items-center justify-between">
+      <div className={cn("transition-all", isSidebarOpen ? "md:ml-64" : "md:ml-0")}>
+        {/* Top Bar (Mobile) */}
+        <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 md:hidden">
+          <div className="px-4 py-3 flex items-center justify-between">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
@@ -133,16 +148,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-black text-emerald-500 uppercase tracking-wider">System Online</span>
+              <span className="text-xs font-black text-emerald-500 uppercase tracking-wider">Online</span>
             </div>
+
+            <button
+              onClick={handleLogout}
+              className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            >
+              <LogOut size={20} />
+            </button>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-6 md:p-8">
+        <main className="p-4 sm:p-6 md:p-8">
           {children}
         </main>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -10,7 +10,6 @@ import {
   Loader2,
   Calendar
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -58,7 +57,6 @@ export default function RevenueAnalytics() {
   const monthlyRevenue = revenue?.monthlyRevenue || [];
   const topVendors = revenue?.topVendors || [];
 
-  // Chart data
   const monthlyChartData = {
     labels: monthlyRevenue.map((m: any) => `${m.month}/${m.year}`),
     datasets: [
@@ -95,65 +93,75 @@ export default function RevenueAnalytics() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Revenue Analytics</h1>
-        <p className="text-slate-400 font-semibold">Financial overview and performance metrics</p>
+      <div className="px-4 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">
+          Revenue Analytics
+        </h1>
+        <p className="text-sm sm:text-base text-slate-400 font-semibold">
+          Financial overview and performance metrics
+        </p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <DollarSign size={24} className="text-emerald-400" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-0">
+        <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 p-4 sm:p-6">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <DollarSign size={20} className="sm:w-6 sm:h-6 text-emerald-400" />
             </div>
             <div>
               <p className="text-xs text-emerald-400 font-black uppercase">Platform Revenue</p>
-              <p className="text-2xl font-black text-white">${(summary.platformRevenue || 0).toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-black text-white">
+                ${(summary.platformRevenue || 0).toLocaleString()}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-emerald-400 font-bold">
-            <TrendingUp size={14} />
+            <TrendingUp size={12} />
             <span>2% of total volume</span>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <TrendingUp size={24} className="text-blue-400" />
+        <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 p-4 sm:p-6">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-blue-500/20 flex items-center justify-center">
+              <TrendingUp size={20} className="sm:w-6 sm:h-6 text-blue-400" />
             </div>
             <div>
               <p className="text-xs text-blue-400 font-black uppercase">Total Volume</p>
-              <p className="text-2xl font-black text-white">${(summary.totalVolume || 0).toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-black text-white">
+                ${(summary.totalVolume || 0).toLocaleString()}
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-400 font-semibold">All transactions processed</p>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <ShoppingCart size={24} className="text-purple-400" />
+        <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 p-4 sm:p-6">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <ShoppingCart size={20} className="sm:w-6 sm:h-6 text-purple-400" />
             </div>
             <div>
               <p className="text-xs text-purple-400 font-black uppercase">Total Orders</p>
-              <p className="text-2xl font-black text-white">{summary.totalOrders || 0}</p>
+              <p className="text-xl sm:text-2xl font-black text-white">{summary.totalOrders || 0}</p>
             </div>
           </div>
           <p className="text-xs text-slate-400 font-semibold">Completed transactions</p>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <Award size={24} className="text-amber-400" />
+        <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4 sm:p-6">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-amber-500/20 flex items-center justify-center">
+              <Award size={20} className="sm:w-6 sm:h-6 text-amber-400" />
             </div>
             <div>
               <p className="text-xs text-amber-400 font-black uppercase">Avg Order Value</p>
-              <p className="text-2xl font-black text-white">${(summary.averageOrderValue || 0).toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-black text-white">
+                ${(summary.averageOrderValue || 0).toLocaleString()}
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-400 font-semibold">Per transaction</p>
@@ -161,82 +169,108 @@ export default function RevenueAnalytics() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-0">
         {/* Monthly Trend */}
-        <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-          <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2">
-            <Calendar className="text-blue-400" />
-            Monthly Revenue Trend
+        <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6 flex items-center gap-2">
+            <Calendar className="text-blue-400" size={20} />
+            <span className="hidden sm:inline">Monthly Revenue Trend</span>
+            <span className="sm:hidden">Monthly Trend</span>
           </h3>
-          <Line
-            data={monthlyChartData}
-            options={{
-              responsive: true,
-              interaction: {
-                mode: "index",
-                intersect: false
-              },
-              plugins: {
-                legend: {
-                  display: true,
-                  labels: { color: "rgba(148, 163, 184, 0.8)" }
-                }
-              },
-              scales: {
-                y: {
-                  type: "linear",
-                  display: true,
-                  position: "left",
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+          <div className="h-64 sm:h-auto">
+            <Line
+              data={monthlyChartData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                  mode: "index",
+                  intersect: false
                 },
-                y1: {
-                  type: "linear",
-                  display: true,
-                  position: "right",
-                  grid: { drawOnChartArea: false },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+                plugins: {
+                  legend: {
+                    display: true,
+                    labels: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  }
                 },
-                x: {
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+                scales: {
+                  y: {
+                    type: "linear",
+                    display: true,
+                    position: "left",
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  },
+                  y1: {
+                    type: "linear",
+                    display: true,
+                    position: "right",
+                    grid: { drawOnChartArea: false },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  },
+                  x: {
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
 
         {/* Top Vendors */}
-        <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-          <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2">
-            <Award className="text-purple-400" />
-            Top 10 Vendors by Revenue
+        <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6 flex items-center gap-2">
+            <Award className="text-purple-400" size={20} />
+            <span className="hidden sm:inline">Top 10 Vendors by Revenue</span>
+            <span className="sm:hidden">Top Vendors</span>
           </h3>
-          <Bar
-            data={topVendorsChart}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+          <div className="h-64 sm:h-auto">
+            <Bar
+              data={topVendorsChart}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: false }
                 },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Top Vendors Table */}
-      <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 overflow-hidden">
+      {/* Top Vendors Table - Desktop Only */}
+      <div className="hidden md:block rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 overflow-hidden mx-4 sm:mx-0">
         <div className="p-6 border-b border-slate-800">
           <h3 className="text-xl font-black text-white">Top Performing Vendors</h3>
         </div>
@@ -261,7 +295,7 @@ export default function RevenueAnalytics() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-bold text-white">{vendor.vendorEmail}</p>
+                    <p className="font-bold text-white truncate max-w-[200px]">{vendor.vendorEmail}</p>
                   </td>
                   <td className="px-6 py-4">
                     <p className="font-black text-white">${vendor.totalRevenue.toLocaleString()}</p>
@@ -277,6 +311,36 @@ export default function RevenueAnalytics() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Top Vendors - Mobile Cards */}
+      <div className="block md:hidden space-y-3 px-4">
+        <h3 className="text-lg font-black text-white mb-3">Top Vendors</h3>
+        {topVendors.slice(0, 5).map((vendor: any, index: number) => (
+          <div
+            key={index}
+            className="rounded-xl bg-slate-900/50 border border-slate-800 p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                {index < 3 && <Award className="text-amber-400" size={16} />}
+                <span className="font-black text-white">#{index + 1}</span>
+              </div>
+              <p className="text-xs text-slate-400 font-semibold">{vendor.orderCount} orders</p>
+            </div>
+            <p className="font-bold text-white text-sm mb-2 truncate">{vendor.vendorEmail}</p>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <p className="text-slate-500 font-bold uppercase mb-1">Total Revenue</p>
+                <p className="font-black text-white">${vendor.totalRevenue.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-slate-500 font-bold uppercase mb-1">Platform Revenue</p>
+                <p className="font-black text-emerald-400">${vendor.platformRevenue.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

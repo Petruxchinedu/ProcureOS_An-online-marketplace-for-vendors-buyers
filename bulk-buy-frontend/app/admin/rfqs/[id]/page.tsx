@@ -52,108 +52,104 @@ export default function RFQDetailPage() {
   const dealValue = rfq.quantity * (rfq.vendorCounterPrice || rfq.targetUnitPrice);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-0">
         <button
           onClick={() => router.back()}
-          className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
         </button>
-        <div>
-          <h1 className="text-3xl font-black text-white mb-1">RFQ Details</h1>
-          <p className="text-slate-400 font-semibold font-mono">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-black text-white mb-1 truncate">RFQ Details</h1>
+          <p className="text-xs sm:text-sm text-slate-400 font-semibold font-mono truncate">
             ID: {rfq._id}
           </p>
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
         {/* Left Column - RFQ Info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Product Details */}
-          <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-            <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-              <Package className="text-blue-400" size={20} />
+          <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-black text-white mb-4 flex items-center gap-2">
+              <Package className="text-blue-400" size={18} />
               Product Information
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
                 <p className="text-xs text-slate-500 font-bold uppercase mb-1">Product Name</p>
-                <p className="text-white font-bold text-lg">{rfq.productId?.name || "N/A"}</p>
+                <p className="text-white font-bold text-sm sm:text-lg">{rfq.productId?.name || "N/A"}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Category</p>
-                  <p className="text-white font-semibold">{rfq.productId?.category || "N/A"}</p>
+                  <p className="text-white font-semibold text-sm">{rfq.productId?.category || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Base Price</p>
-                  <p className="text-white font-semibold">${rfq.productId?.pricePerUnit || 0}</p>
+                  <p className="text-white font-semibold text-sm">${rfq.productId?.pricePerUnit || 0}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Parties */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Buyer */}
-            <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-              <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-                <User className="text-purple-400" size={20} />
+            <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-black text-white mb-4 flex items-center gap-2">
+                <User className="text-purple-400" size={18} />
                 Buyer
               </h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email</p>
-                  <p className="text-white font-semibold">{rfq.buyerId?.email || "N/A"}</p>
-                </div>
+              <div>
+                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email</p>
+                <p className="text-white font-semibold text-sm truncate">{rfq.buyerId?.email || "N/A"}</p>
               </div>
             </div>
 
             {/* Vendor */}
-            <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-              <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-                <Building2 className="text-blue-400" size={20} />
+            <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-black text-white mb-4 flex items-center gap-2">
+                <Building2 className="text-blue-400" size={18} />
                 Vendor
               </h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email</p>
-                  <p className="text-white font-semibold">{rfq.vendorId?.email || "N/A"}</p>
-                </div>
+              <div>
+                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email</p>
+                <p className="text-white font-semibold text-sm truncate">{rfq.vendorId?.email || "N/A"}</p>
               </div>
             </div>
           </div>
 
           {/* Message */}
-          <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-            <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-              <MessageSquare className="text-blue-400" size={20} />
+          <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-black text-white mb-4 flex items-center gap-2">
+              <MessageSquare className="text-blue-400" size={18} />
               Buyer Message
             </h3>
-            <p className="text-slate-300 font-medium italic border-l-4 border-blue-500 pl-4 py-2">
+            <p className="text-slate-300 font-medium italic border-l-4 border-blue-500 pl-4 py-2 text-sm break-words">
               "{rfq.message || "No message provided"}"
             </p>
           </div>
 
           {/* Order Info (if exists) */}
           {order && (
-            <div className="rounded-2xl bg-emerald-900/20 backdrop-blur border border-emerald-500/20 p-6">
-              <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
-                <ShoppingCart className="text-emerald-400" size={20} />
+            <div className="rounded-xl sm:rounded-2xl bg-emerald-900/20 backdrop-blur border border-emerald-500/20 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-black text-white mb-4 flex items-center gap-2">
+                <ShoppingCart className="text-emerald-400" size={18} />
                 Associated Order
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Order ID</p>
-                  <p className="text-white font-mono font-semibold">{order._id.slice(-8)}</p>
+                  <p className="text-white font-mono font-semibold text-sm">{order._id.slice(-8)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Status</p>
-                  <p className="text-emerald-400 font-bold">{order.status}</p>
+                  <p className="text-emerald-400 font-bold text-sm">{order.status}</p>
                 </div>
               </div>
             </div>
@@ -161,12 +157,12 @@ export default function RFQDetailPage() {
         </div>
 
         {/* Right Column - Stats */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Status Card */}
-          <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-            <h3 className="text-sm font-black text-slate-400 uppercase mb-4">Status</h3>
+          <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+            <h3 className="text-xs sm:text-sm font-black text-slate-400 uppercase mb-4">Status</h3>
             <span className={cn(
-              "inline-block px-4 py-2 rounded-xl text-sm font-black uppercase",
+              "inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-black uppercase",
               rfq.status === "PENDING" && "bg-amber-500/10 text-amber-500 border border-amber-500/20",
               rfq.status === "NEGOTIATING" && "bg-blue-500/10 text-blue-500 border border-blue-500/20",
               rfq.status === "ACCEPTED" && "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
@@ -177,19 +173,19 @@ export default function RFQDetailPage() {
           </div>
 
           {/* Deal Value */}
-          <div className="rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur border border-blue-500/20 p-6">
+          <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur border border-blue-500/20 p-4 sm:p-6">
             <div className="flex items-center gap-2 text-blue-400 mb-2">
-              <DollarSign size={20} />
-              <h3 className="text-sm font-black uppercase">Deal Value</h3>
+              <DollarSign size={18} />
+              <h3 className="text-xs sm:text-sm font-black uppercase">Deal Value</h3>
             </div>
-            <p className="text-4xl font-black text-white">${dealValue.toLocaleString()}</p>
-            <p className="text-sm text-slate-400 font-semibold mt-2">
+            <p className="text-3xl sm:text-4xl font-black text-white mb-2">${dealValue.toLocaleString()}</p>
+            <p className="text-xs sm:text-sm text-slate-400 font-semibold">
               {rfq.quantity} units @ ${rfq.targetUnitPrice}/unit
             </p>
             {rfq.vendorCounterPrice && (
               <div className="mt-4 pt-4 border-t border-white/10">
                 <p className="text-xs text-slate-500 font-bold uppercase mb-1">Vendor Counter</p>
-                <p className="text-emerald-400 font-black text-xl">
+                <p className="text-emerald-400 font-black text-lg sm:text-xl">
                   ${rfq.vendorCounterPrice}/unit
                 </p>
               </div>
@@ -197,23 +193,23 @@ export default function RFQDetailPage() {
           </div>
 
           {/* Timeline */}
-          <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-            <h3 className="text-sm font-black text-slate-400 uppercase mb-4">Timeline</h3>
+          <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+            <h3 className="text-xs sm:text-sm font-black text-slate-400 uppercase mb-4">Timeline</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Calendar size={16} className="text-blue-400" />
-                <div>
+              <div className="flex items-start gap-3">
+                <Calendar size={14} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0">
                   <p className="text-xs text-slate-500 font-bold">Created</p>
-                  <p className="text-white font-semibold text-sm">
+                  <p className="text-white font-semibold text-xs sm:text-sm break-words">
                     {new Date(rfq.createdAt).toLocaleString()}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Calendar size={16} className="text-purple-400" />
-                <div>
+              <div className="flex items-start gap-3">
+                <Calendar size={14} className="text-purple-400 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0">
                   <p className="text-xs text-slate-500 font-bold">Last Updated</p>
-                  <p className="text-white font-semibold text-sm">
+                  <p className="text-white font-semibold text-xs sm:text-sm break-words">
                     {new Date(rfq.updatedAt).toLocaleString()}
                   </p>
                 </div>

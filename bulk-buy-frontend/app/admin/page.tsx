@@ -10,7 +10,6 @@ import {
   TrendingUp,
   TrendingDown,
   Activity,
-  Package,
   Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,7 +27,6 @@ import {
   Filler
 } from "chart.js";
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -48,7 +46,7 @@ export default function AdminDashboard() {
       const res = await api.get("/admin/dashboard/stats");
       return res.data;
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    refetchInterval: 30000
   });
 
   if (isLoading) {
@@ -62,7 +60,6 @@ export default function AdminDashboard() {
   const overview = stats?.overview || {};
   const rfqsByStatus = stats?.rfqsByStatus || {};
 
-  // Stat cards config
   const statCards = [
     {
       title: "Total Users",
@@ -98,7 +95,6 @@ export default function AdminDashboard() {
     }
   ];
 
-  // Chart data
   const monthlyTrendData = {
     labels: (stats?.monthlyTrend || []).map((m: any) => `${m._id.month}/${m._id.year}`),
     datasets: [
@@ -131,39 +127,42 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Executive Dashboard</h1>
-        <p className="text-slate-400 font-semibold">Real-time platform analytics and monitoring</p>
+      <div className="px-4 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">
+          Executive Dashboard
+        </h1>
+        <p className="text-sm sm:text-base text-slate-400 font-semibold">
+          Real-time platform analytics and monitoring
+        </p>
       </div>
 
       {/* Stat Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-0">
         {statCards.map((stat, index) => (
           <div
             key={index}
-            className="relative overflow-hidden rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6 hover:border-slate-700 transition-all group"
+            className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6 hover:border-slate-700 transition-all group"
           >
-            {/* Background Gradient */}
             <div className={cn(
               "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br",
               stat.gradient
             )} />
 
             <div className="relative">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className={cn(
-                  "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center",
+                  "w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br flex items-center justify-center",
                   stat.gradient
                 )}>
-                  <stat.icon size={24} className="text-white" />
+                  <stat.icon size={20} className="sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-1 text-xs font-bold">
                   {stat.trend === "up" ? (
-                    <TrendingUp size={14} className="text-emerald-500" />
+                    <TrendingUp size={12} className="sm:w-3.5 sm:h-3.5 text-emerald-500" />
                   ) : (
-                    <TrendingDown size={14} className="text-red-500" />
+                    <TrendingDown size={12} className="sm:w-3.5 sm:h-3.5 text-red-500" />
                   )}
                   <span className={stat.trend === "up" ? "text-emerald-500" : "text-red-500"}>
                     {stat.change}
@@ -172,8 +171,8 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <p className="text-slate-400 text-sm font-semibold mb-1">{stat.title}</p>
-                <p className="text-3xl font-black text-white tracking-tight">{stat.value}</p>
+                <p className="text-slate-400 text-xs sm:text-sm font-semibold mb-1">{stat.title}</p>
+                <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">{stat.value}</p>
               </div>
             </div>
           </div>
@@ -181,90 +180,112 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-0">
         {/* Monthly Trend */}
-        <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-          <h3 className="text-xl font-black text-white mb-6">Monthly Activity Trend</h3>
-          <Line
-            data={monthlyTrendData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+        <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6">
+            Monthly Activity Trend
+          </h3>
+          <div className="h-64 sm:h-auto">
+            <Line
+              data={monthlyTrendData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: false }
                 },
-                x: {
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  },
+                  x: {
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
 
         {/* Status Breakdown */}
-        <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-          <h3 className="text-xl font-black text-white mb-6">RFQ Status Distribution</h3>
-          <Bar
-            data={statusBreakdown}
-            options={{
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: { display: false }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+        <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6">
+            RFQ Status Distribution
+          </h3>
+          <div className="h-64 sm:h-auto">
+            <Bar
+              data={statusBreakdown}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: false }
                 },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "rgba(148, 163, 184, 0.8)" }
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(148, 163, 184, 0.1)" },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { 
+                      color: "rgba(148, 163, 184, 0.8)",
+                      font: { size: 10 }
+                    }
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-6">
-        <h3 className="text-xl font-black text-white mb-6">Recent Activity</h3>
-        <div className="space-y-3">
+      <div className="rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur border border-slate-800 p-4 sm:p-6 mx-4 sm:mx-0">
+        <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6">Recent Activity</h3>
+        <div className="space-y-2 sm:space-y-3">
           {stats?.recentActivity?.slice(0, 5).map((rfq: any, index: number) => (
             <div
               key={index}
-              className="flex items-center justify-between p-4 rounded-xl bg-slate-800/30 hover:bg-slate-800/50 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-800/30 hover:bg-slate-800/50 transition-colors"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <Activity size={20} className="text-blue-400" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                  <Activity size={16} className="sm:w-5 sm:h-5 text-blue-400" />
                 </div>
-                <div>
-                  <p className="font-bold text-white">{rfq.productId?.name || "Product"}</p>
-                  <p className="text-sm text-slate-400">
+                <div className="min-w-0">
+                  <p className="font-bold text-white text-sm sm:text-base truncate">
+                    {rfq.productId?.name || "Product"}
+                  </p>
+                  <p className="text-xs sm:text-sm text-slate-400 truncate">
                     {rfq.buyerId?.email} → {rfq.vendorId?.email}
                   </p>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="flex items-center justify-between sm:justify-end sm:text-right gap-3">
                 <p className={cn(
-                  "text-xs font-black uppercase px-3 py-1 rounded-full",
+                  "text-xs font-black uppercase px-2 sm:px-3 py-1 rounded-full whitespace-nowrap",
                   rfq.status === "PENDING" && "bg-amber-500/10 text-amber-500",
                   rfq.status === "ACCEPTED" && "bg-emerald-500/10 text-emerald-500",
                   rfq.status === "REJECTED" && "bg-red-500/10 text-red-500"
                 )}>
                   {rfq.status}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500">
                   {new Date(rfq.createdAt).toLocaleDateString()}
                 </p>
               </div>

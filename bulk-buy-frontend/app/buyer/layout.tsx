@@ -5,18 +5,18 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
-  Package,
+  ShoppingCart,
   FileText,
   LogOut,
   Menu,
   X,
   User,
-  ShoppingBag
+  Store
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export default function VendorLayout({ children }: { children: React.ReactNode }) {
+export default function BuyerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -31,11 +31,11 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.role !== "VENDOR") {
+      if (payload.role !== "BUYER") {
         router.push("/");
         return;
       }
-      setUserEmail(payload.email || "Vendor");
+      setUserEmail(payload.email || "Buyer");
     } catch (error) {
       router.push("/login");
     }
@@ -49,10 +49,10 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
   };
 
   const navigation = [
-    { name: "Dashboard", href: "/vendor/dashboard", icon: LayoutDashboard },
-    { name: "RFQ Inbox", href: "/vendor/rfq", icon: FileText },
-    { name: "My Products", href: "/vendor/inventory", icon: Package },
-    { name: "Orders", href: "/vendor/orders", icon: ShoppingBag },
+    { name: "Dashboard", href: "/buyer/dashboard", icon: LayoutDashboard },
+    { name: "Marketplace", href: "/buyer/products", icon: Store },
+    { name: "My RFQs", href: "/buyer/rfqs", icon: FileText },
+    { name: "Orders", href: "/buyer/orders", icon: ShoppingCart },
   ];
 
   return (
@@ -69,12 +69,12 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           {/* Logo */}
           <div className="p-6 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
                 <span className="text-white font-black text-xl">P</span>
               </div>
               <div>
                 <h2 className="text-white font-black text-lg tracking-tight">ProcureOS</h2>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Vendor Portal</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Buyer Portal</p>
               </div>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all",
                     isActive
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                      ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
                       : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   )}
                 >
@@ -104,12 +104,12 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           {/* User Info & Logout */}
           <div className="p-4 border-t border-slate-800">
             <div className="flex items-center gap-3 mb-3 px-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0">
                 <User size={16} className="text-white" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-white font-bold text-sm truncate">{userEmail}</p>
-                <p className="text-xs text-slate-500 font-semibold">Vendor</p>
+                <p className="text-xs text-slate-500 font-semibold">Buyer</p>
               </div>
             </div>
             
